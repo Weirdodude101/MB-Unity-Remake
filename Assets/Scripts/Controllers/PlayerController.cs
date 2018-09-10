@@ -109,11 +109,11 @@ public class PlayerController : MonoBehaviour {
                 break;
 
             case "koopa_side_collider":
-                enemy.sendMethod("shellMovement", col: col.gameObject.transform.localPosition.x);
+                enemy.sendMethod("shellMovement", col.gameObject.transform.localPosition.x);
                 break;
 
             default:
-                enemy.sendMethod(string.Format("handle{0}", enemy.enemyType.ToString()), enemy: enemy);
+                enemy.sendMethod(string.Format("handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
         }
     }

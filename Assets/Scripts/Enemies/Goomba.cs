@@ -6,6 +6,9 @@ public class Goomba : EnemyController
     
     public static Goomba goomba;
 
+
+    SpriteRenderer sprite;
+
     bool hitByKoopa = false;
 
     void Start()
@@ -14,11 +17,16 @@ public class Goomba : EnemyController
         anim = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody2D>();
         bcollider = GetComponent<BoxCollider2D>();
+
+        sprite = GetComponent<SpriteRenderer>();
+
         setType(ETypes.Goomba);
 	}
 
 	void FixedUpdate()
 	{
+        
+
         Movement();
         CheckDead();
 	}
@@ -65,9 +73,7 @@ public class Goomba : EnemyController
         while (true)
         {
             if (hitByKoopa) {
-                Vector3 scale = transform.localScale;
-                scale.y *= -1;
-                transform.localScale = scale;
+                sprite.flipY = true;
                 Destroy(bcollider);
 
             }

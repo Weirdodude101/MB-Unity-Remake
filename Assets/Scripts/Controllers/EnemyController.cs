@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Security.Cryptography;
 
 public class EnemyController : MonoBehaviour {
 
@@ -39,9 +38,12 @@ public class EnemyController : MonoBehaviour {
         return id;
     }
 
-    public bool sendMethod(string method, EnemyController enemy=null, float col=0f) {
-        object[] args = { enemy, col};
-        BroadcastMessage(method, args);
+    public bool sendMethod(params object[] objects) {
+        object[] args = new object[objects.Length];
+        for (int i = 1; i < objects.Length; i++) {
+            args[i-1] = objects[i];
+        }
+        BroadcastMessage(objects[0].ToString(), args);
         return true;
     }
 

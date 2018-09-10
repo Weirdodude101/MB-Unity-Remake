@@ -1,15 +1,17 @@
 using UnityEngine;
 using System.Collections;
-using System.Security.Cryptography;
-using System;
 
 public class Koopa : EnemyController
 {
 
     public const float hitSpeed = 2f;
 
-    public bool shellMoving = false;
+    public bool shellMoving;
+    public bool shellHit;
     public static Koopa koopa;
+
+    float x;
+
 
 
 	void Start()
@@ -18,7 +20,9 @@ public class Koopa : EnemyController
         anim = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody2D>();
         bcollider = GetComponent<BoxCollider2D>();
+
         setType(ETypes.Koopa);
+
 
 	}
 
@@ -59,21 +63,37 @@ public class Koopa : EnemyController
      }
 
 
-    public void shellMovement(object[] args) {
-        float x = (float)args[1];
-        float v = hitSpeed;
-        if (x > 0) {
-            v = hitSpeed * -1;
-        }
-
-        rigidBody.velocity = new Vector2(v, rigidBody.velocity.y);
+	public void shellMovement(object[] args) {
+        x = (float)args[0];
         shellMoving = true;
+        shellHit = true;
+    }
+
+    IEnumerator shellMove()
+    {
+        while (true)
+        {
+            yield return new WaitForEndOfFrame();
+            shellHit = false;
+            float v = hitSpeed;
+            if (x > 0)
+            {
+                v = -hitSpeed;
+            }
+
+
+            break;
+        }
     }
 
     void Movement()
     {
-        if (!anim.GetBool("inShell")) {
+        bool inShell = anim.GetBool("inShell");
+        if (!inShell) {
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
+        }
+        if (inShell && shellMoving && shellHit) {
+            StartCoroutine(shellMove());
         }
     }
 
