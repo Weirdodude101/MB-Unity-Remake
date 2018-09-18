@@ -109,6 +109,9 @@ public class PlayerController : MonoBehaviour {
                 break;
 
             case "koopa_side_collider":
+                Koopa koopa = col.gameObject.GetComponentInParent<Koopa>();
+                if (koopa.canKill)
+                    handlePlayerDeath(enemy);
                 enemy.sendMethod("shellMovement", col.gameObject.transform.localPosition.x);
                 break;
 
@@ -129,7 +132,7 @@ public class PlayerController : MonoBehaviour {
         rigidBody.velocity = new Vector2 (horizontal * playerSpeed, rigidBody.velocity.y);
 
         if (Input.GetKeyDown (KeyCode.Space)) {
-            if (onGround) {
+            if (onGround && !Dead) {
                 spacePressed = true;
                 rigidBody.AddForce (new Vector2 (0, jumpHeight), ForceMode2D.Impulse);
                 onGround = false;

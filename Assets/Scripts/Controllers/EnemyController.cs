@@ -43,7 +43,7 @@ public class EnemyController : MonoBehaviour {
         for (int i = 1; i < objects.Length; i++) {
             args[i-1] = objects[i];
         }
-        BroadcastMessage(objects[0].ToString(), args);
+        SendMessage(objects[0].ToString(), args);
         return true;
     }
 

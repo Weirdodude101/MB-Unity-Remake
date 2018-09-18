@@ -7,7 +7,9 @@ public class Koopa : EnemyController
     public const float hitSpeed = 2f;
 
     public bool shellMoving;
-    public bool shellHit;
+    public bool canKill;
+    bool collided;
+
     public static Koopa koopa;
 
     float x;
@@ -46,15 +48,16 @@ public class Koopa : EnemyController
             bodyCollider2D.size = new Vector2(0, 0);
 
             foreach (Transform child in transform) {
+                BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
                 switch(child.tag) {
+                    
                     case "koopa_side_collider":
-                        BoxCollider2D sideCollider2D = child.GetComponent<BoxCollider2D>();
-                        sideCollider2D.isTrigger = true;
+                        collider2D.isTrigger = true;
                         break;
+
                     case "enemy_body_collider":
-                        BoxCollider2D eCollider = child.GetComponent<BoxCollider2D>();
-                        eCollider.isTrigger = false;
-                        eCollider.size = new Vector2(0, 0);
+                        collider2D.isTrigger = false;
+                        collider2D.size = new Vector2(0, 0);
                         break;
 
                 }
@@ -62,25 +65,34 @@ public class Koopa : EnemyController
         }
      }
 
-
 	public void shellMovement(object[] args) {
         x = (float)args[0];
         shellMoving = true;
-        shellHit = true;
     }
+
+    void OnCollisionEnter2D(Collision2D col) {
+        if (col.gameObject.name == "Collider") {
+            collided = true;
+        }
+    }
+
 
     IEnumerator shellMove()
     {
         while (true)
         {
-            yield return new WaitForEndOfFrame();
-            shellHit = false;
+            
             float v = hitSpeed;
-            if (x > 0)
-            {
-                v = -hitSpeed;
-            }
 
+            yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
+
+            if (x > 0)
+                v = -hitSpeed;
+            
+            if (collided)
+                v *= -1;
+            
+            rigidBody.velocity = new Vector2(v, rigidBody.velocity.y);
 
             break;
         }
@@ -92,7 +104,8 @@ public class Koopa : EnemyController
         if (!inShell) {
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
         }
-        if (inShell && shellMoving && shellHit) {
+        if (inShell && shellMoving) {
+            canKill = true;
             StartCoroutine(shellMove());
         }
     }
