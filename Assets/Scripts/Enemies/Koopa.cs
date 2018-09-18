@@ -8,11 +8,15 @@ public class Koopa : EnemyController
 
     public bool shellMoving;
     public bool canKill;
+
+    float x;
     bool collided;
+    bool hitByKoopa;
+
+    SpriteRenderer sprite;
 
     public static Koopa koopa;
 
-    float x;
 
 
 
@@ -22,6 +26,7 @@ public class Koopa : EnemyController
         anim = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody2D>();
         bcollider = GetComponent<BoxCollider2D>();
+        sprite = GetComponent<SpriteRenderer>();
 
         setType(ETypes.Koopa);
 
@@ -73,6 +78,40 @@ public class Koopa : EnemyController
     void OnCollisionEnter2D(Collision2D col) {
         if (col.gameObject.name == "Collider") {
             collided = true;
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D col) {
+        switch (col.gameObject.tag) {
+            case "koopa_side_collider":
+                if (col.gameObject.GetComponentInParent<Koopa>().shellMoving) {
+                    
+                    hitByKoopa = true;
+                    rigidBody.AddForce(new Vector2(0.75f, 1f), ForceMode2D.Impulse);
+                    StartCoroutine(Death(2f));
+                }
+                break;
+        }
+    }
+
+    IEnumerator Death(float t)
+    {
+        while (true)
+        {
+            if (hitByKoopa)
+            {
+                sprite.flipY = true;
+                isDead = true;
+                bcollider.enabled = false;
+                foreach (Transform child in transform)
+                {
+                    BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
+                    collider2D.enabled = false;
+                }
+
+            }
+            yield return new WaitForSeconds(t);
+            Destroy(gameObject);
         }
     }
 
