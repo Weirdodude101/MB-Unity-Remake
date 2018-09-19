@@ -20,8 +20,9 @@ public class Koopa : EnemyController
 
 
 
-	void Start()
-	{
+    void Start()
+    {
+
         audio = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody2D>();
@@ -31,10 +32,11 @@ public class Koopa : EnemyController
         setType(ETypes.Koopa);
 
 
-	}
+    }
 
     void FixedUpdate()
     {
+
         Movement();
     }
 
@@ -43,6 +45,7 @@ public class Koopa : EnemyController
         enemy = (EnemyController)args[0];
         if (!enemy.anim.GetBool("inShell"))
         {
+
             enemy.anim.SetBool("inShell", true);
             enemy.bcollider.size = new Vector2(0.16f, 0.14f);
             enemy.setSpeed(0f);
@@ -52,10 +55,12 @@ public class Koopa : EnemyController
             bodyCollider2D.isTrigger = false;
             bodyCollider2D.size = new Vector2(0, 0);
 
-            foreach (Transform child in transform) {
+            foreach (Transform child in transform)
+            {
                 BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
-                switch(child.tag) {
-                    
+                switch (child.tag)
+                {
+
                     case "koopa_side_collider":
                         collider2D.isTrigger = true;
                         break;
@@ -68,26 +73,40 @@ public class Koopa : EnemyController
                 }
             }
         }
-     }
+    }
 
-	public void shellMovement(object[] args) {
+    public void shellMovement(object[] args)
+    {
         x = (float)args[0];
         shellMoving = true;
     }
 
-    void OnCollisionEnter2D(Collision2D col) {
-        if (col.gameObject.name == "Collider") {
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.name == "Collider")
+        {
             collided = true;
         }
     }
 
-    void OnTriggerEnter2D(Collider2D col) {
-        switch (col.gameObject.tag) {
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        Koopa koopa = col.gameObject.GetComponentInParent<Koopa>();
+        switch (col.gameObject.tag)
+        {
             case "koopa_side_collider":
-                if (col.gameObject.GetComponentInParent<Koopa>().shellMoving) {
-                    
+                if (koopa.shellMoving)
+                {
+                    float x = 0.75f;
+                    if (koopa.anim.GetBool("inShell") && koopa.getXVel() > 0 && anim.GetBool("inShell"))
+                    {
+                        enemySpeed *= -1;
+                        x *= -1;
+                    }
+
                     hitByKoopa = true;
-                    rigidBody.AddForce(new Vector2(0.75f, 1f), ForceMode2D.Impulse);
+                    
+                    rigidBody.AddForce(new Vector2(x, 1f), ForceMode2D.Impulse);
                     StartCoroutine(Death(2f));
                 }
                 break;
@@ -102,12 +121,14 @@ public class Koopa : EnemyController
             {
                 sprite.flipY = true;
                 isDead = true;
+
                 bcollider.enabled = false;
                 foreach (Transform child in transform)
                 {
                     BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
                     collider2D.enabled = false;
                 }
+
 
             }
             yield return new WaitForSeconds(t);
@@ -120,30 +141,37 @@ public class Koopa : EnemyController
     {
         while (true)
         {
-            
+
             float v = hitSpeed;
 
             yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
 
             if (x > 0)
                 v = -hitSpeed;
-            
+
             if (collided)
                 v *= -1;
-            
+
             rigidBody.velocity = new Vector2(v, rigidBody.velocity.y);
 
             break;
         }
     }
 
+    public float getXVel()
+    {
+        return rigidBody.velocity.x;
+    }
+
     void Movement()
     {
         bool inShell = anim.GetBool("inShell");
-        if (!inShell) {
+        if (!inShell)
+        {
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
         }
-        if (inShell && shellMoving) {
+        if (inShell && shellMoving)
+        {
             canKill = true;
             StartCoroutine(shellMove());
         }

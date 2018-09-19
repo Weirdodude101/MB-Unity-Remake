@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Goomba : EnemyController
 {
-    
+
     public static Goomba goomba;
 
 
@@ -12,7 +12,7 @@ public class Goomba : EnemyController
     bool hitByKoopa = false;
 
     void Start()
-	{
+    {
         audio = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody2D>();
@@ -21,17 +21,15 @@ public class Goomba : EnemyController
         sprite = GetComponent<SpriteRenderer>();
 
         setType(ETypes.Goomba);
-	}
+    }
 
-	void FixedUpdate()
-	{
-        
-
+    void FixedUpdate()
+    {
         Movement();
         CheckDead();
-	}
+    }
 
-	public void handleGoomba(object[] args)
+    public void handleGoomba(object[] args)
     {
         enemy = (EnemyController)args[0];
         enemy.isDead = true;
@@ -50,19 +48,25 @@ public class Goomba : EnemyController
         }
     }
 
-	void OnTriggerEnter2D(Collider2D col) {
-        switch(col.gameObject.tag) {
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        Koopa koopa = col.gameObject.GetComponentInParent<Koopa>();
+        switch (col.gameObject.tag)
+        {
             case "koopa_side_collider":
-                if (col.gameObject.GetComponentInParent<Koopa>().shellMoving) {
+                if (koopa.shellMoving)
+                {
                     hitByKoopa = true;
                     rigidBody.AddForce(new Vector2(0.75f, 1f), ForceMode2D.Impulse);
                     StartCoroutine(Death(10f));
                 }
+
                 break;
         }
-	}
+    }
 
-	void Movement() {
+    void Movement()
+    {
         if (!hitByKoopa)
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
     }
@@ -72,9 +76,16 @@ public class Goomba : EnemyController
     {
         while (true)
         {
-            if (hitByKoopa) {
+            if (hitByKoopa)
+            {
+
+                foreach (Transform child in transform)
+                {
+                    BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
+                    collider2D.enabled = false;
+                }
                 sprite.flipY = true;
-                Destroy(bcollider);
+                bcollider.enabled = false;
 
             }
             yield return new WaitForSeconds(t);
