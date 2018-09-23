@@ -110,6 +110,7 @@ public class PlayerController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col)
     {
         EnemyController enemy = col.gameObject.GetComponentInParent<EnemyController>();
+
         switch (col.gameObject.tag)
         {
             case "enemy_body_collider":
@@ -120,6 +121,7 @@ public class PlayerController : MonoBehaviour
                 Koopa koopa = col.gameObject.GetComponentInParent<Koopa>();
                 if (koopa.canKill)
                     handlePlayerDeath(enemy);
+                
                 enemy.sendMethod("shellMovement", col.gameObject.transform.localPosition.x);
                 break;
 

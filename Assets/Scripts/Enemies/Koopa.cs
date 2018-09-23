@@ -6,14 +6,18 @@ public class Koopa : EnemyController
 
     public const float hitSpeed = 2f;
 
+
+
     public bool shellMoving;
     public bool canKill;
 
+
+    float time_left = 8f;
     float x;
-    bool collided;
+
+    internal bool collided;
     bool hitByKoopa;
 
-    SpriteRenderer sprite;
 
     public static Koopa koopa;
 
@@ -22,20 +26,28 @@ public class Koopa : EnemyController
 
     void Start()
     {
-
         audio = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody2D>();
         bcollider = GetComponent<BoxCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
 
+        anim.SetFloat("time_left", time_left);
         setType(ETypes.Koopa);
-
 
     }
 
+
+
+
     void FixedUpdate()
     {
+        if (time_left <= 1)
+        {
+            anim.SetBool("inShell", false);
+            shellMoving = false;
+      
+        }
 
         Movement();
     }
@@ -72,6 +84,7 @@ public class Koopa : EnemyController
 
                 }
             }
+            StartCoroutine(koopa_countdown());
         }
     }
 
@@ -79,14 +92,6 @@ public class Koopa : EnemyController
     {
         x = (float)args[0];
         shellMoving = true;
-    }
-
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.gameObject.name == "Collider")
-        {
-            collided = true;
-        }
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -158,6 +163,16 @@ public class Koopa : EnemyController
         }
     }
 
+    IEnumerator koopa_countdown()
+    {
+        while (time_left > 0 && !shellMoving)
+        {
+            yield return new WaitForSeconds(1f);
+            time_left -= 1;
+            anim.SetFloat("time_left", time_left);
+        }
+    }
+
     public float getXVel()
     {
         return rigidBody.velocity.x;
@@ -166,6 +181,7 @@ public class Koopa : EnemyController
     void Movement()
     {
         bool inShell = anim.GetBool("inShell");
+
         if (!inShell)
         {
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);

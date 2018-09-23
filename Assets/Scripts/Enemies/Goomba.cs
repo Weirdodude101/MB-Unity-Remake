@@ -7,7 +7,6 @@ public class Goomba : EnemyController
     public static Goomba goomba;
 
 
-    SpriteRenderer sprite;
 
     bool hitByKoopa = false;
 

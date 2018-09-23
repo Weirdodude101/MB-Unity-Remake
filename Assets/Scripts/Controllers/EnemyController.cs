@@ -12,7 +12,6 @@ public class EnemyController : MonoBehaviour
     public AudioSource audio;
 
     internal BoxCollider2D bcollider;
-    bool facingRight;
 
     [SerializeField]
     protected float enemySpeed = 0.5f;
@@ -22,12 +21,14 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     protected int id = 0;
 
+    protected SpriteRenderer sprite;
+
     public static EnemyController enemy;
 
 
     void Start()
     {
-
+        sprite = GetComponent<SpriteRenderer>();
     }
 
 
@@ -60,21 +61,26 @@ public class EnemyController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.name == "Collider")
+        if (enemyType == ETypes.Koopa)
         {
-            if (enemySpeed >= 0)
+            Koopa koopa = GetComponent<Koopa>();
+            if (koopa.anim.GetBool("inShell") && col.gameObject.tag == "collider")
             {
-                Flip();
+                koopa.collided = true;
             }
+                
         }
+
+        if (col.gameObject.tag == "collider")
+            Flip();
     }
 
     protected void Flip()
     {
-        enemySpeed *= -1;
-        facingRight = !facingRight;
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        transform.localScale = scale;
+        if (enemySpeed >= 0)
+        {
+            setSpeed(-enemySpeed);
+            sprite.flipX = true;
+        }
     }
 }
