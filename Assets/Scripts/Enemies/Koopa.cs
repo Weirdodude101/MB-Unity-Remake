@@ -31,7 +31,7 @@ public class Koopa : EnemyController
         rigidBody = GetComponent<Rigidbody2D>();
         bcollider = GetComponent<BoxCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
-
+        
         anim.SetFloat("time_left", time_left);
         setType(ETypes.Koopa);
 
@@ -102,7 +102,7 @@ public class Koopa : EnemyController
             case "koopa_side_collider":
                 if (koopa.shellMoving)
                 {
-                    float x = 0.75f;
+                    float x = 0.125f;
                     if (koopa.anim.GetBool("inShell") && koopa.getXVel() > 0 && anim.GetBool("inShell"))
                     {
                         enemySpeed *= -1;

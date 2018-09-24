@@ -56,13 +56,14 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.tag == "Ground")
+        if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Block")
         {
             onGround = true;
             spacePressed = false;
         }
 
     }
+    
 
     bool handleEnemyFunc(EnemyController enemy)
     {
