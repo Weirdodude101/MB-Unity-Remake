@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-public class PlayerController : MonoBehaviour
+public class PlayerController : GameManager
 {
 
     Rigidbody2D rigidBody;

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : GameManager
 {
 
 
@@ -41,17 +41,6 @@ public class EnemyController : MonoBehaviour
     public int getId()
     {
         return id;
-    }
-
-    public bool sendMethod(params object[] objects)
-    {
-        object[] args = new object[objects.Length];
-        for (int i = 1; i < objects.Length; i++)
-        {
-            args[i - 1] = objects[i];
-        }
-        SendMessage(objects[0].ToString(), args);
-        return true;
     }
 
     public void setSpeed(float speed)
