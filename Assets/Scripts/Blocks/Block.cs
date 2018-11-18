@@ -4,36 +4,58 @@ using System.Collections;
 using System.Collections.Generic;
 public class Block : GameManager
 {
+    SpriteRenderer spriteRenderer;
+    Animator anim;
 
-
-    public enum BlockTypes { Coin, Brick }
+    public enum BlockTypes { Coin, Brick, Used}
     public BlockTypes blockType;
 
-    public enum Contains { Coin, Mushroom, Flower, Star, Life, Vine };
+    public enum Contains {Empty, Coin, Mushroom, Flower, Star, Life, Vine };
     public Contains contains;
 
-    readonly Dictionary<object, int> type2Id = new Dictionary<object, int>
+    readonly Dictionary<BlockTypes, int> type2Id = new Dictionary<BlockTypes, int>
     {
         {BlockTypes.Coin, 0},
-        {BlockTypes.Brick, 5}
+        {BlockTypes.Brick, 5},
+        {BlockTypes.Used, 6}
     };
 
     public Dictionary<string, Sprite> dictSprites = new Dictionary<string, Sprite>();
 
     void Start()
     {
-        
-        /*Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites");
-        foreach (Sprite s in sprites) {
-            Console.WriteLine(s.name);
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+
+        LoadSprites();
+
+        SetType(blockType);
+    }
+    
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (contains == Contains.Empty)
+            Destroy(gameObject);
+        else
+            SetType(BlockTypes.Used);
+    }
+
+    void LoadSprites() {
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Tiles/item_block_sprites");
+
+        foreach (Sprite s in sprites)
+        {
             dictSprites.Add(s.name, s);
-        }*/
-        Debug.Log(type2Id[blockType]);
+        }
+    }
 
-       
-        //GetComponent<SpriteRenderer>().sprite = dictSprites["item_block_sprites_" + type2Id[blockType]];
-        //gameObject.GetComponent<SpriteRenderer>().sprite = (Sprite)sprites[type2Id[blockType]-1];
-        //anim.enabled = false;
+    void SetType(BlockTypes type) {
+        blockType = type;
 
+        spriteRenderer.sprite = dictSprites["item_block_sprites_" + type2Id[blockType]];
+
+        if (blockType != BlockTypes.Coin)
+            anim.enabled = false;
     }
 }
