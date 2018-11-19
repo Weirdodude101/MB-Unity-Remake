@@ -35,10 +35,13 @@ public class Block : GameManager
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (contains == Contains.Empty)
-            Destroy(gameObject);
-        else
-            SetType(BlockTypes.Used);
+        if (getSide(col.gameObject.transform, gameObject.transform) == 1)
+        {
+            if (contains == Contains.Empty)
+                Destroy(gameObject);
+            else
+                SetType(BlockTypes.Used);
+        }
     }
 
     void LoadSprites() {

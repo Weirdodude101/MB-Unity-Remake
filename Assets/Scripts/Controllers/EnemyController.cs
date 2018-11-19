@@ -19,7 +19,7 @@ public class EnemyController : GameManager
     protected Rigidbody2D rigidBody;
 
     [SerializeField]
-    protected int id = 0;
+    protected int id;
 
     protected SpriteRenderer sprite;
 

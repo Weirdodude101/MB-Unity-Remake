@@ -5,30 +5,18 @@ public class PlayerController : GameManager
 
     Rigidbody2D rigidBody;
     Animator anim;
-    BoxCollider2D collider;
-    AudioSource audio;
     AudioSource music;
 
-    Transform Player;
-    Transform Ground;
-
-
     public bool onGround;
-    public bool Dead = false;
+    public bool Dead;
     public AudioClip deathSound;
     bool facingRight;
-    bool spacePressed;
-
-
+    
     [SerializeField]
     float playerSpeed = 1f;
 
     [SerializeField]
     float jumpHeight = 1f;
-
-    float groundPosY;
-
-
 
     void Start()
     {
@@ -37,18 +25,16 @@ public class PlayerController : GameManager
 
         rigidBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        audio = GetComponent<AudioSource>();
-        collider = GetComponent<BoxCollider2D>();
 
-        Player = GameObject.Find("Player").transform;
-        Ground = GameObject.Find("Ground").transform;
         music = GameObject.Find("Main Camera").GetComponent<AudioSource>();
+
 
     }
 
     void FixedUpdate()
     {
         float horizontal = Input.GetAxis("Horizontal");
+
         Movement(horizontal);
         Flip(horizontal);
 
@@ -58,8 +44,8 @@ public class PlayerController : GameManager
     {
         if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Block")
         {
-            onGround = true;
-            spacePressed = false;
+            if (getSide(gameObject.transform, col.gameObject.transform) == 0)
+                onGround = true;
         }
 
     }
@@ -78,17 +64,6 @@ public class PlayerController : GameManager
         {
             if (!enemy.isDead)
             {
-                anim.SetBool("death", true);
-                Dead = true;
-
-                music.Stop();
-                music.clip = deathSound;
-                music.loop = false;
-                music.Play();
-
-                playerSpeed = 0;
-
-
                 StartCoroutine(Death());
                 return true;
             }
@@ -99,10 +74,16 @@ public class PlayerController : GameManager
 
     IEnumerator Death()
     {
-        while (true)
-        {
+        Dead = true;
+        anim.SetBool("death", Dead);
+
+        setMusic(music, deathSound, false);
+
+        playerSpeed = 0;
+
+        while (true) {
             rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
-            Destroy(collider);
+            Destroy(GetComponent<BoxCollider2D>());
             yield return new WaitForSeconds(3f);
             Destroy(gameObject);
         }
@@ -132,14 +113,6 @@ public class PlayerController : GameManager
         }
     }
 
-    void OnCollisionExit2D(Collision2D col)
-    {
-
-        if (col.gameObject.name == "Ground")
-        {
-            onGround = false;
-        }
-    }
 
     void Movement(float horizontal)
     {
@@ -149,15 +122,15 @@ public class PlayerController : GameManager
         {
             if (onGround && !Dead)
             {
-                spacePressed = true;
                 rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
                 onGround = false;
-                audio.Play();
+
+                GetComponent<AudioSource>().Play();
             }
         }
         anim.SetFloat("speed", Mathf.Abs(horizontal));
         anim.SetBool("onGround", onGround);
-        anim.SetBool("spacePressed", spacePressed);
+        anim.SetBool("spacePressed", !onGround);
 
     }
 
@@ -166,9 +139,7 @@ public class PlayerController : GameManager
         if (horizontal > 0 && !facingRight || horizontal < 0 && facingRight)
         {
             facingRight = !facingRight;
-            Vector3 scale = transform.localScale;
-            scale.x *= -1;
-            transform.localScale = scale;
+            GetComponent<SpriteRenderer>().flipX = !GetComponent<SpriteRenderer>().flipX;
         }
     }
 }
