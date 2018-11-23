@@ -1,6 +1,5 @@
 
 .DS_Store
-*.meta
 Library/
 Temp/
 Obj/
