@@ -11,6 +11,7 @@ public class CameraController : MonoBehaviour
     Vector3 offset;
 
     private float minX = -3.293317f;
+
     // Use this for initialization
     void Start()
     {

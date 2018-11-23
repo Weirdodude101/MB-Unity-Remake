@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-public class PlayerController : GameManager
+public class PlayerController : GameBase
 {
 
     Rigidbody2D rigidBody;
@@ -11,7 +11,7 @@ public class PlayerController : GameManager
     public bool Dead;
     public AudioClip deathSound;
     bool facingRight;
-    
+
     [SerializeField]
     float playerSpeed = 1f;
 
@@ -20,6 +20,8 @@ public class PlayerController : GameManager
 
     void Start()
     {
+        Setup();
+
         facingRight = true;
         onGround = false;
 
@@ -44,17 +46,9 @@ public class PlayerController : GameManager
     {
         if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Block")
         {
-            if (getSide(gameObject.transform, col.gameObject.transform) == 0)
+            if (gbase.getSide(gameObject.transform, col.gameObject.transform, true) == 0)
                 onGround = true;
         }
-
-    }
-    
-
-    bool handleEnemyFunc(EnemyController enemy)
-    {
-        enemy.sendMethod(string.Format("handle{0}", enemy.enemyType.ToString()), enemy);
-        return true;
 
     }
 
@@ -77,7 +71,7 @@ public class PlayerController : GameManager
         Dead = true;
         anim.SetBool("death", Dead);
 
-        setMusic(music, deathSound, false);
+        gbase.setMusic(music, deathSound, false);
 
         playerSpeed = 0;
 
@@ -128,6 +122,7 @@ public class PlayerController : GameManager
                 GetComponent<AudioSource>().Play();
             }
         }
+
         anim.SetFloat("speed", Mathf.Abs(horizontal));
         anim.SetBool("onGround", onGround);
         anim.SetBool("spacePressed", !onGround);

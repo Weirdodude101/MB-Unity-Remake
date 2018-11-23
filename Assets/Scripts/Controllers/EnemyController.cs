@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EnemyController : GameManager
+public class EnemyController : GameBase
 {
 
 
@@ -28,6 +28,8 @@ public class EnemyController : GameManager
 
     void Start()
     {
+        Setup();
+
         sprite = GetComponent<SpriteRenderer>();
     }
 

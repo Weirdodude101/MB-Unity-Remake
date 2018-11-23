@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-public class Block : GameManager
+public class Block : GameBase
 {
     SpriteRenderer spriteRenderer;
     Animator anim;
@@ -24,6 +24,8 @@ public class Block : GameManager
 
     void Start()
     {
+        Setup();
+
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
 
@@ -35,7 +37,7 @@ public class Block : GameManager
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (getSide(col.gameObject.transform, gameObject.transform) == 1)
+        if (getSide(col.gameObject.transform, gameObject.transform, true) == 1)
         {
             if (contains == Contains.Empty)
                 Destroy(gameObject);

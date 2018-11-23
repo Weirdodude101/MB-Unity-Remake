@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameManager : MonoBehaviour
+public class GameBase : MonoBehaviour
 {
 
-    protected GameManager manager;
+    protected GameBase gbase;
+
+    protected void Setup() {
+        gbase = this;
+    }
 
     public bool sendMethod(params object[] objects)
     {
@@ -17,23 +21,28 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    public void setMusic(AudioSource source, AudioClip clip, bool loop) {
+    public void setMusic(AudioSource source, AudioClip clip, bool loop)
+    {
         source.Stop();
         source.clip = clip;
         source.loop = loop;
         source.Play();
     }
 
-    public int getSide(Transform t0, Transform t1) {
+    public int getSide(Transform t0, Transform t1, bool top)
+    {
         Vector2 dir = (t0.position - t1.position).normalized;
+        //Debug.Log(dir.x);
+        if (top)
+        {
+            if (dir.y > 0)
+                // TOP
+                return 0;
 
-        if (dir.y > 0)
-            // TOP
-            return 0;
-
-        if (dir.y < 0)
-            // BOTTOM
-            return 1;
+            if (dir.y < 0)
+                // BOTTOM
+                return 1;
+        }
 
         if (dir.x > 0)
             // RIGHT
@@ -43,7 +52,8 @@ public class GameManager : MonoBehaviour
             // LEFT
             return 3;
 
-
         return 4;
+
+
     }
 }

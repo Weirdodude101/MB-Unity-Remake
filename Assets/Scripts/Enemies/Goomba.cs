@@ -8,7 +8,7 @@ public class Goomba : EnemyController
 
 
 
-    bool hitByKoopa = false;
+    bool hitByKoopa;
 
     void Start()
     {
