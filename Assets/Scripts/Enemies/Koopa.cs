@@ -6,11 +6,8 @@ public class Koopa : EnemyController
 
     public const float hitSpeed = 2f;
 
-
-
     public bool shellMoving;
     public bool canKill;
-
 
     float time_left = 8f;
     float x;
@@ -20,7 +17,6 @@ public class Koopa : EnemyController
 
 
     public static Koopa koopa;
-
 
 
 

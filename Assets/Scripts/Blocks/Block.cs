@@ -40,9 +40,14 @@ public class Block : GameBase
         if (getSide(col.gameObject.transform, gameObject.transform, true) == 1)
         {
             if (contains == Contains.Empty)
+            {
                 Destroy(gameObject);
+            }
             else
+            {
+                StartCoroutine(Bounce());
                 SetType(BlockTypes.Used);
+            }
         }
     }
 
@@ -62,5 +67,32 @@ public class Block : GameBase
 
         if (blockType != BlockTypes.Coin)
             anim.enabled = false;
+    }
+
+    IEnumerator Bounce()
+    {
+        float moveBy = 0.09375f;
+        float overTime = 0.125f;
+        float startTime = Time.time;
+
+        Vector2 point = new Vector2(transform.position.x, transform.position.y + moveBy);
+
+        while (Time.time < startTime + overTime)
+        {
+            transform.position = Vector2.Lerp(transform.position, point, (Time.time - startTime) / overTime);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1/64);
+
+        startTime = Time.time;
+
+        point.y -= moveBy;
+        while (Time.time < startTime + overTime)
+        {
+            transform.position = Vector2.Lerp(transform.position, point, (Time.time - startTime) / overTime);
+            yield return null;
+        }
+
     }
 }
