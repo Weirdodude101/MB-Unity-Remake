@@ -30,7 +30,7 @@ public class Koopa : EnemyController
         anim = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody2D>();
         bcollider = GetComponent<BoxCollider2D>();
-        sprite = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         
         anim.SetFloat("time_left", time_left);
         setType(ETypes.Koopa);
@@ -149,7 +149,7 @@ public class Koopa : EnemyController
         {
             if (hitByKoopa)
             {
-                sprite.flipY = true;
+                spriteRenderer.flipY = true;
                 isDead = true;
 
                 bcollider.enabled = false;

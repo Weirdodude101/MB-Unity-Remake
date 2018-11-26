@@ -17,7 +17,7 @@ public class Goomba : EnemyController
         rigidBody = GetComponent<Rigidbody2D>();
         bcollider = GetComponent<BoxCollider2D>();
 
-        sprite = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         setType(ETypes.Goomba);
     }
@@ -83,7 +83,7 @@ public class Goomba : EnemyController
                     BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
                     collider2D.enabled = false;
                 }
-                sprite.flipY = true;
+                spriteRenderer.flipY = true;
                 bcollider.enabled = false;
 
             }

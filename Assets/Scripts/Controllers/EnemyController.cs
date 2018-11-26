@@ -1,36 +1,56 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+
 
 public class EnemyController : GameBase
 {
 
-
-    public enum ETypes { Goomba, Koopa, test2 };
-
-    public ETypes enemyType;
-    public bool isDead = false;
+    public bool isDead;
     public Animator anim;
     public AudioSource audio;
 
     internal BoxCollider2D bcollider;
 
-    [SerializeField]
-    protected float enemySpeed = 0.5f;
-
     protected Rigidbody2D rigidBody;
+    protected SpriteRenderer spriteRenderer;
 
     [SerializeField]
     protected int id;
 
-    protected SpriteRenderer sprite;
+    [SerializeField]
+    protected float enemySpeed = 0.5f;
+
 
     public static EnemyController enemy;
 
+
+    public enum ETypes { Goomba, Koopa };
+    public ETypes enemyType;
+
+    readonly Dictionary<ETypes, int> type2Id = new Dictionary<ETypes, int>
+    {
+        {ETypes.Goomba, 0},
+        {ETypes.Koopa, 6},
+    };
+
+    readonly Dictionary<ETypes, object> type2Class = new Dictionary<ETypes, object>
+    {
+        {ETypes.Goomba, typeof(Goomba)},
+        {ETypes.Koopa, typeof(Koopa)},
+    };
 
     void Start()
     {
         Setup();
 
-        sprite = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+
+        gbase.LoadSprites("Sprites/Enemy/enemy_sprites");
+
+
+
+        setType(enemyType);
     }
 
 
@@ -38,6 +58,8 @@ public class EnemyController : GameBase
     {
         enemyType = type;
 
+        spriteRenderer.sprite = gbase.dictSprites["enemy_sprites_" + type2Id[enemyType]];
+        anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load(string.Format("Animations/Enemies/{0}/{1}_controller", enemyType.ToString(), enemyType.ToString().ToLower()));
     }
 
     public int getId()
@@ -71,7 +93,7 @@ public class EnemyController : GameBase
         if (enemySpeed >= 0)
         {
             setSpeed(-enemySpeed);
-            sprite.flipX = true;
+            spriteRenderer.flipX = true;
         }
     }
 }

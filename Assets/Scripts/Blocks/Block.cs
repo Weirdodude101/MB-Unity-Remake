@@ -31,7 +31,7 @@ public class Block : GameBase
         anim = GetComponent<Animator>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
 
-        LoadSprites();
+        gbase.LoadSprites("Sprites/Tiles/item_block_sprites");
 
         SetType(blockType);
     }
@@ -55,19 +55,10 @@ public class Block : GameBase
         }
     }
 
-    void LoadSprites() {
-        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Tiles/item_block_sprites");
-
-        foreach (Sprite s in sprites)
-        {
-            dictSprites.Add(s.name, s);
-        }
-    }
-
     void SetType(BlockTypes type) {
         blockType = type;
 
-        spriteRenderer.sprite = dictSprites["item_block_sprites_" + type2Id[blockType]];
+        spriteRenderer.sprite = gbase.dictSprites["item_block_sprites_" + type2Id[blockType]];
 
         if (blockType != BlockTypes.Coin)
             anim.enabled = false;

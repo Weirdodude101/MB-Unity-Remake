@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class GameBase : MonoBehaviour
 {
 
+
     protected GameBase gbase;
+
+    public Dictionary<string, Sprite> dictSprites = new Dictionary<string, Sprite>();
 
     protected void Setup() {
         gbase = this;
@@ -27,6 +30,16 @@ public class GameBase : MonoBehaviour
         source.clip = clip;
         source.loop = loop;
         source.Play();
+    }
+
+    public void LoadSprites(string location)
+    {
+        Sprite[] sprites = Resources.LoadAll<Sprite>(location);
+
+        foreach (Sprite s in sprites)
+        {
+            dictSprites.Add(s.name, s);
+        }
     }
 
     public int getSide(Transform t0, Transform t1, bool top)
@@ -53,7 +66,5 @@ public class GameBase : MonoBehaviour
             return 3;
 
         return 4;
-
-
     }
 }
