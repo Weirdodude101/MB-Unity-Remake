@@ -6,6 +6,7 @@ public class Block : GameBase
 {
     SpriteRenderer spriteRenderer;
     Animator anim;
+    PlayerController player;
 
     public enum BlockTypes { Coin, Brick, Used}
     public BlockTypes blockType;
@@ -28,16 +29,19 @@ public class Block : GameBase
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        player = GameObject.Find("Player").GetComponent<PlayerController>();
 
         LoadSprites();
 
         SetType(blockType);
     }
-    
+
+
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (getSide(col.gameObject.transform, gameObject.transform, true) == 1)
+    
+        if (getSide(col.gameObject.transform, gameObject.transform, true) == 1 && player.velocity.y > 0 && blockType != BlockTypes.Used)
         {
             if (contains == Contains.Empty)
             {
@@ -71,9 +75,9 @@ public class Block : GameBase
 
     IEnumerator Bounce()
     {
+        float startTime = Time.time;
         float moveBy = 0.09375f;
         float overTime = 0.125f;
-        float startTime = Time.time;
 
         Vector2 point = new Vector2(transform.position.x, transform.position.y + moveBy);
 
@@ -83,7 +87,7 @@ public class Block : GameBase
             yield return null;
         }
 
-        yield return new WaitForSeconds(1/64);
+        yield return new WaitForSeconds(0.0016f);
 
         startTime = Time.time;
 

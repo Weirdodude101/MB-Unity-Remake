@@ -4,13 +4,16 @@ public class PlayerController : GameBase
 {
 
     Rigidbody2D rigidBody;
+
     Animator anim;
     AudioSource music;
 
     public bool onGround;
     public bool Dead;
+    public Vector2 velocity;
     public AudioClip deathSound;
-    bool facingRight;
+
+    bool facingRight = true;
 
     [SerializeField]
     float playerSpeed = 1f;
@@ -22,19 +25,18 @@ public class PlayerController : GameBase
     {
         Setup();
 
-        facingRight = true;
-        onGround = false;
-
         rigidBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-
         music = GameObject.Find("Main Camera").GetComponent<AudioSource>();
 
+        
 
     }
 
     void FixedUpdate()
     {
+        velocity = rigidBody.velocity;
+
         float horizontal = Input.GetAxis("Horizontal");
 
         Movement(horizontal);
