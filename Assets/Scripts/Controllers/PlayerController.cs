@@ -78,7 +78,7 @@ public class PlayerController : GameBase
         playerSpeed = 0;
 
         while (true) {
-            rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
+            rigidBody.AddForce(new Vector2(0, jumpHeight-0.75f), ForceMode2D.Impulse);
             Destroy(GetComponent<BoxCollider2D>());
             yield return new WaitForSeconds(3f);
             Destroy(gameObject);
@@ -88,10 +88,17 @@ public class PlayerController : GameBase
     void OnTriggerEnter2D(Collider2D col)
     {
         EnemyController enemy = col.gameObject.GetComponentInParent<EnemyController>();
-
+        Debug.Log(col.gameObject.tag);
         switch (col.gameObject.tag)
         {
+            case "koopa_head_collider":
+
+                rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
+                enemy.sendMethod(string.Format("handle{0}", enemy.enemyType.ToString()), enemy);
+                break;
+
             case "enemy_body_collider":
+
                 handlePlayerDeath(enemy);
                 break;
 
@@ -99,9 +106,11 @@ public class PlayerController : GameBase
                 Koopa koopa = col.gameObject.GetComponentInParent<Koopa>();
                 if (koopa.canKill)
                     handlePlayerDeath(enemy);
-                
-                enemy.sendMethod("shellMovement", col.gameObject.transform.localPosition.x);
+
+
+                //koopa.ShellMove(col.gameObject.transform.localPosition.x);
                 break;
+
 
             default:
                 enemy.sendMethod(string.Format("handle{0}", enemy.enemyType.ToString()), enemy);

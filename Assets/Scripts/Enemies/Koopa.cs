@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 public class Koopa : EnemyController
 {
 
@@ -10,7 +10,7 @@ public class Koopa : EnemyController
     public bool canKill;
 
     float time_left = 8f;
-    float x;
+
 
     internal bool collided;
     bool hitByKoopa;
@@ -18,7 +18,11 @@ public class Koopa : EnemyController
 
     public static Koopa koopa;
 
-
+    readonly Dictionary<string, Vector2> sizes = new Dictionary<string, Vector2>
+    {
+        {"enemy_body_collider", new Vector2(1.27f, 1.43f)},
+        {"koopa_shell", new Vector2(0.16f, 0.14f)}
+    };
 
     void Start()
     {
@@ -33,16 +37,37 @@ public class Koopa : EnemyController
 
     }
 
-
-
-
     void FixedUpdate()
     {
         if (time_left <= 1)
         {
             anim.SetBool("inShell", false);
             shellMoving = false;
-      
+            time_left = 8f;
+            bcollider.enabled = true;
+            setSpeed(0.5f);
+
+            foreach (Transform child in transform)
+            {
+                BoxCollider2D c = child.GetComponent<BoxCollider2D>();
+                switch (child.tag)
+                {
+                    case "koopa_side_collider":
+                        c.isTrigger = false;
+                        break;
+
+                    case "enemy_body_collider":
+                        c.isTrigger = true;
+                        c.size = sizes["enemy_body_collider"];
+                        break;
+
+                    case "koopa_shell":
+                        c.enabled = false;
+                        break;
+
+                }
+            }
+
         }
 
         Movement();
@@ -55,39 +80,33 @@ public class Koopa : EnemyController
         {
 
             enemy.anim.SetBool("inShell", true);
-            enemy.bcollider.size = new Vector2(0.16f, 0.14f);
+            enemy.bcollider.enabled = false;
             enemy.setSpeed(0f);
-
-            GameObject bodyCollider = GameObject.FindGameObjectWithTag("enemy_body_collider");
-            BoxCollider2D bodyCollider2D = bodyCollider.GetComponent<BoxCollider2D>();
-            bodyCollider2D.isTrigger = false;
-            bodyCollider2D.size = new Vector2(0, 0);
 
             foreach (Transform child in transform)
             {
-                BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
+                BoxCollider2D c = child.GetComponent<BoxCollider2D>();
                 switch (child.tag)
                 {
 
                     case "koopa_side_collider":
-                        collider2D.isTrigger = true;
+                        c.isTrigger = true;
                         break;
 
                     case "enemy_body_collider":
-                        collider2D.isTrigger = false;
-                        collider2D.size = new Vector2(0, 0);
+                        c.isTrigger = false;
+                        c.size = new Vector2(0, 0);
+                        break;
+
+                    case "koopa_shell":
+                        c.enabled = true;
+                        c.size = sizes["koopa_shell"];
                         break;
 
                 }
             }
             StartCoroutine(koopa_countdown());
         }
-    }
-
-    public void shellMovement(object[] args)
-    {
-        x = (float)args[0];
-        shellMoving = true;
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -111,6 +130,16 @@ public class Koopa : EnemyController
                     StartCoroutine(Death(2f));
                 }
                 break;
+        }
+    }
+
+    public void ShellMove(float localPos)
+    {
+        if (anim.GetBool("inShell") && shellMoving)
+        {
+            canKill = true;
+            time_left = 8f;
+            StartCoroutine(shellMove(localPos));
         }
     }
 
@@ -138,7 +167,7 @@ public class Koopa : EnemyController
     }
 
 
-    IEnumerator shellMove()
+    IEnumerator shellMove(float localPos)
     {
         while (true)
         {
@@ -147,11 +176,19 @@ public class Koopa : EnemyController
 
             yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
 
-            if (x > 0)
+            if (localPos > 0)
+            {
+                Debug.Log("v = -hitSpeed: " + localPos);
                 v = -hitSpeed;
+            }
 
             if (collided)
+            {
+                Debug.Log("v *= -1");
                 v *= -1;
+            }
+
+
 
             rigidBody.velocity = new Vector2(v, rigidBody.velocity.y);
 
@@ -176,16 +213,10 @@ public class Koopa : EnemyController
 
     void Movement()
     {
-        bool inShell = anim.GetBool("inShell");
 
-        if (!inShell)
+        if (!anim.GetBool("inShell"))
         {
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
-        }
-        if (inShell && shellMoving)
-        {
-            canKill = true;
-            StartCoroutine(shellMove());
         }
     }
 
