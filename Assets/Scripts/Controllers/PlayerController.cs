@@ -3,6 +3,8 @@ using System.Collections;
 public class PlayerController : GameBase
 {
 
+    GameManager _gameManager;
+
     Rigidbody2D rigidBody;
 
     Animator anim;
@@ -23,13 +25,14 @@ public class PlayerController : GameBase
 
     void Start()
     {
+        //_gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
         Setup();
 
         rigidBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         music = GameObject.Find("Main Camera").GetComponent<AudioSource>();
 
-        
 
     }
 
@@ -58,7 +61,7 @@ public class PlayerController : GameBase
     {
         if (enemy)
         {
-            if (!enemy.isDead)
+            if (!enemy.Dead)
             {
                 StartCoroutine(Death());
                 return true;

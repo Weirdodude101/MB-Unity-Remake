@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\Enemies\Goomba.cs" />
     <Compile Include="Assets\Scripts\Enemies\Koopa.cs" />
     <Compile Include="Assets\Scripts\GameBase.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>/Users/main/Desktop/Projects/MB-Unity-Remake/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

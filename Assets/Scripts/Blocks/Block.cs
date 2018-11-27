@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 public class Block : GameBase
 {
+    GameManager _gameManager;
+
     SpriteRenderer spriteRenderer;
     Animator anim;
     PlayerController player;
@@ -20,11 +22,11 @@ public class Block : GameBase
         {BlockTypes.Brick, 5},
         {BlockTypes.Used, 6}
     };
-
-    public Dictionary<string, Sprite> dictSprites = new Dictionary<string, Sprite>();
-
+    
     void Start()
     {
+        //_gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
         Setup();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -32,8 +34,11 @@ public class Block : GameBase
         player = GameObject.Find("Player").GetComponent<PlayerController>();
 
         gbase.LoadSprites("Sprites/Tiles/item_block_sprites");
-
+        
         SetType(blockType);
+
+
+
     }
 
 

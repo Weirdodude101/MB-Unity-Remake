@@ -4,9 +4,7 @@ using System.Collections.Generic;
 public class GameBase : MonoBehaviour
 {
 
-
     protected GameBase gbase;
-
     public Dictionary<string, Sprite> dictSprites = new Dictionary<string, Sprite>();
 
     protected void Setup() {

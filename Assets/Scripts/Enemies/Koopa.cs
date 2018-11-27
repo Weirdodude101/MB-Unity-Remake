@@ -6,6 +6,7 @@ public class Koopa : EnemyController
 
     public const float hitSpeed = 2f;
 
+
     public bool shellMoving;
     public bool canKill;
 
@@ -18,11 +19,6 @@ public class Koopa : EnemyController
 
     public static Koopa koopa;
 
-    readonly Dictionary<string, Vector2> sizes = new Dictionary<string, Vector2>
-    {
-        {"enemy_body_collider", new Vector2(1.27f, 1.43f)},
-        {"koopa_shell", new Vector2(0.16f, 0.14f)}
-    };
 
     void Start()
     {
@@ -33,7 +29,7 @@ public class Koopa : EnemyController
         spriteRenderer = GetComponent<SpriteRenderer>();
         
         anim.SetFloat("time_left", time_left);
-        setType(ETypes.Koopa);
+        //setType(ETypes.Koopa);
 
     }
 
@@ -45,7 +41,7 @@ public class Koopa : EnemyController
             shellMoving = false;
             time_left = 8f;
             bcollider.enabled = true;
-            setSpeed(0.5f);
+            SetSpeed(0.5f);
 
             foreach (Transform child in transform)
             {
@@ -75,13 +71,13 @@ public class Koopa : EnemyController
 
     public void handleKoopa(object[] args)
     {
-        enemy = (EnemyController)args[0];
-        if (!enemy.anim.GetBool("inShell"))
+        enemyController = (EnemyController)args[0];
+        if (!enemyController.anim.GetBool("inShell"))
         {
 
-            enemy.anim.SetBool("inShell", true);
-            enemy.bcollider.enabled = false;
-            enemy.setSpeed(0f);
+            enemyController.anim.SetBool("inShell", true);
+            enemyController.bcollider.enabled = false;
+            enemyController.SetSpeed(0f);
 
             foreach (Transform child in transform)
             {
@@ -150,7 +146,7 @@ public class Koopa : EnemyController
             if (hitByKoopa)
             {
                 spriteRenderer.flipY = true;
-                isDead = true;
+                Dead = true;
 
                 bcollider.enabled = false;
                 foreach (Transform child in transform)

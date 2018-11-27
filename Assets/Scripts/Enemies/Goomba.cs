@@ -19,7 +19,7 @@ public class Goomba : EnemyController
 
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        setType(ETypes.Goomba);
+        ///setType(ETypes.Goomba);
     }
 
     void FixedUpdate()
@@ -30,18 +30,19 @@ public class Goomba : EnemyController
 
     public void handleGoomba(object[] args)
     {
-        enemy = (EnemyController)args[0];
-        enemy.isDead = true;
-        enemy.audio.time = 0.5f;
-        enemy.audio.Play();
+        enemyController = (EnemyController)args[0];
+        enemyController.Dead = true;
+        enemyController.audio.time = 0.5f;
+        enemyController.audio.Play();
     }
 
     void CheckDead()
     {
-        if (isDead == true)
+        if (Dead == true)
         {
+            Debug.Log("DEAD");
             enemySpeed = 0f;
-            anim.SetBool("isDead", isDead);
+            anim.SetBool("isDead", Dead);
             bcollider.size = new Vector2(bcollider.size.x, 0.04f);
             StartCoroutine(Death(0.3f));
         }
