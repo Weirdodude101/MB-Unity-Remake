@@ -6,7 +6,7 @@ using System;
 public class EnemyController : GameBase
 {
 
-    public bool Dead { get; set; }
+    public bool Dead;
     public Animator anim;
     public AudioSource audio;
 
@@ -14,9 +14,6 @@ public class EnemyController : GameBase
 
     protected Rigidbody2D rigidBody;
     protected SpriteRenderer spriteRenderer;
-
-    [SerializeField]
-    protected int id;
 
     [SerializeField]
     protected float enemySpeed = 0.5f;
@@ -45,11 +42,11 @@ public class EnemyController : GameBase
         {ETypes.Goomba, typeof(Goomba)},
         {ETypes.Koopa, typeof(Koopa)},
     };
-    
+
+    public dynamic enemy;
+
     void Start()
     {
-
-
         Setup();
 
         gameObject.AddComponent(type2Class[enemyType]);
@@ -57,21 +54,14 @@ public class EnemyController : GameBase
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
-        //enemy = GetComponent(type2Class[enemyType]);
+
+        enemy = GetComponent(type2Class[enemyType]);
 
         gbase.LoadSprites("Sprites/Enemy/enemy_sprites");
-        //enemy.Start();
+
+
         SetType(enemyType);
 
-
-
-       
-
-        //enemy = null;
-
-        //enemy = 
-        //enemy = Convert.ChangeType(enemy, type2Class[enemyType].GetType());
-        //enemy = Activator.CreateInstance(type2Class[enemyType].GetType());
 
     }
 
@@ -83,14 +73,18 @@ public class EnemyController : GameBase
         anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load(string.Format("Animations/Enemies/{0}/{1}_controller", enemyType.ToString(), enemyType.ToString().ToLower()));
     }
 
-    public int GetId()
-    {
-        return id;
-    }
-
     public void SetSpeed(float speed)
     {
         enemySpeed = speed;
+    }
+
+    public void SetDead(bool dead)
+    {
+        enemy.Dead = dead;
+    }
+
+    public bool IsDead() {
+        return enemy.Dead;
     }
 
     void OnCollisionEnter2D(Collision2D col)

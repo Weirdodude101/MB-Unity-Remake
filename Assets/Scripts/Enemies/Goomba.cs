@@ -31,16 +31,17 @@ public class Goomba : EnemyController
     public void handleGoomba(object[] args)
     {
         enemyController = (EnemyController)args[0];
-        enemyController.Dead = true;
-        enemyController.audio.time = 0.5f;
-        enemyController.audio.Play();
+        enemyController.SetDead(true);
+        audio.time = 0.5f;
+        audio.Play();
+        //Dead = true;
+
     }
 
     void CheckDead()
     {
         if (Dead == true)
         {
-            Debug.Log("DEAD");
             enemySpeed = 0f;
             anim.SetBool("isDead", Dead);
             bcollider.size = new Vector2(bcollider.size.x, 0.04f);
@@ -88,6 +89,7 @@ public class Goomba : EnemyController
                 bcollider.enabled = false;
 
             }
+            
             yield return new WaitForSeconds(t);
             Destroy(gameObject);
         }

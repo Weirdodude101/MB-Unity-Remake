@@ -9,11 +9,11 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         DontDestroyOnLoad(gameObject);
-        /*foreach (string enemy in Enum.GetNames(typeof(EnemyController.ETypes)))
+        foreach (GameObject obj in FindObjectsOfType(typeof(GameObject)))
         {
-            Debug.Log(enemy);
-            DontDestroyOnLoad(GameObject.Find("model_" + enemy));
-        }*/
+            if (obj.name.StartsWith("model_", StringComparison.Ordinal))
+                DontDestroyOnLoad(obj);
+        }
     }
 
     

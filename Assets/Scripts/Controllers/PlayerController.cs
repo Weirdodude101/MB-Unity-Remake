@@ -101,8 +101,8 @@ public class PlayerController : GameBase
                 break;
 
             case "enemy_body_collider":
-
-                handlePlayerDeath(enemy);
+                if (!enemy.IsDead())
+                    handlePlayerDeath(enemy);
                 break;
 
             case "koopa_side_collider":
