@@ -76,7 +76,7 @@ public class PlayerController : GameBase
         Dead = true;
         anim.SetBool("death", Dead);
 
-        gbase.setMusic(music, deathSound, false);
+        gbase.setMusic(music, deathSound, false, true);
 
         playerSpeed = 0;
 
@@ -91,13 +91,13 @@ public class PlayerController : GameBase
     void OnTriggerEnter2D(Collider2D col)
     {
         EnemyController enemy = col.gameObject.GetComponentInParent<EnemyController>();
-        Debug.Log(col.gameObject.tag);
+        //Debug.Log(col.gameObject.tag);
         switch (col.gameObject.tag)
         {
             case "koopa_head_collider":
 
                 rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
-                enemy.sendMethod(string.Format("handle{0}", enemy.enemyType.ToString()), enemy);
+                enemy.sendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
 
             case "enemy_body_collider":
@@ -116,7 +116,7 @@ public class PlayerController : GameBase
 
 
             default:
-                enemy.sendMethod(string.Format("handle{0}", enemy.enemyType.ToString()), enemy);
+                enemy.sendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
         }
     }

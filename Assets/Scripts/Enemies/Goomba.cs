@@ -18,8 +18,6 @@ public class Goomba : EnemyController
         bcollider = GetComponent<BoxCollider2D>();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        ///setType(ETypes.Goomba);
     }
 
     void FixedUpdate()
@@ -28,14 +26,12 @@ public class Goomba : EnemyController
         CheckDead();
     }
 
-    public void handleGoomba(object[] args)
+    public void HandleGoomba(object[] args)
     {
         enemyController = (EnemyController)args[0];
         enemyController.SetDead(true);
         audio.time = 0.5f;
         audio.Play();
-        //Dead = true;
-
     }
 
     void CheckDead()

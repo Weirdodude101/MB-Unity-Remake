@@ -22,12 +22,13 @@ public class GameBase : MonoBehaviour
         return true;
     }
 
-    public void setMusic(AudioSource source, AudioClip clip, bool loop)
+    public void setMusic(AudioSource source, AudioClip clip, bool loop, bool play)
     {
         source.Stop();
         source.clip = clip;
         source.loop = loop;
-        source.Play();
+        if (play)
+            source.Play();
     }
 
     public void LoadSprites(string location)

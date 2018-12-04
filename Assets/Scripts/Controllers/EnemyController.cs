@@ -25,10 +25,17 @@ public class EnemyController : GameBase
     public enum ETypes { Goomba, Koopa };
     public ETypes enemyType;
 
-    protected readonly Dictionary<string, Vector2> sizes = new Dictionary<string, Vector2>
+    protected readonly Dictionary<string, Vector2> vectors = new Dictionary<string, Vector2>
     {
+        {"Koopa_collider", new Vector2(0.16f, 0.23f)},
+        {"Koopa_offset", new Vector2(0f, 0f)},
+        {"Koopa_shell", new Vector2(0.16f, 0.14f)},
+        {"Koopa", new Vector2(1.5f, 1.5f)},
+        {"Goomba_collider", new Vector2(0.16f, 0.12f)},
+        {"Goomba_offset", new Vector2(0f, -0.02f)},
+        {"Goomba", new Vector2(2f, 2f)},
+
         {"enemy_body_collider", new Vector2(1.27f, 1.43f)},
-        {"koopa_shell", new Vector2(0.16f, 0.14f)}
     };
 
     readonly Dictionary<ETypes, int> type2Id = new Dictionary<ETypes, int>
@@ -44,7 +51,7 @@ public class EnemyController : GameBase
     };
 
     public dynamic enemy;
-
+    
     void Start()
     {
         Setup();
@@ -54,17 +61,44 @@ public class EnemyController : GameBase
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
+        bcollider = GetComponent<BoxCollider2D>();
 
         enemy = GetComponent(type2Class[enemyType]);
 
         gbase.LoadSprites("Sprites/Enemy/enemy_sprites");
 
-
         SetType(enemyType);
-
-
+        PrepareGameObject();
     }
 
+    void PrepareGameObject() {
+
+        gameObject.name = enemyType.ToString();
+
+        GameObject model_load = GameObject.Find(String.Format("model_{0}", gameObject.name));
+        foreach (Transform child in model_load.transform)
+        {
+            Instantiate(child, transform);
+        }
+
+        foreach (Transform child in transform) {
+            if (!child.gameObject.name.StartsWith(enemyType.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                Destroy(child.gameObject);
+                continue;
+            }
+
+            child.gameObject.name = child.gameObject.name.Substring(0, child.name.Length - 7);
+
+        }
+
+        AudioClip clip = Resources.Load<AudioClip>(String.Format("Audio/{0}_sound", enemyType.ToString()));
+        gbase.setMusic(audio, clip, false, false);
+
+        transform.localScale = vectors[String.Format("{0}", enemyType.ToString())];
+        bcollider.size = vectors[String.Format("{0}_collider", enemyType.ToString())];
+        bcollider.offset = vectors[String.Format("{0}_offset", enemyType.ToString())];
+    }
 
     public void SetType(ETypes type)
     {

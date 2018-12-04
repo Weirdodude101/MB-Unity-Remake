@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
+using System;
 public class Koopa : EnemyController
 {
 
@@ -54,7 +54,7 @@ public class Koopa : EnemyController
 
                     case "enemy_body_collider":
                         c.isTrigger = true;
-                        c.size = sizes["enemy_body_collider"];
+                        c.size = vectors["enemy_body_collider"];
                         break;
 
                     case "koopa_shell":
@@ -69,7 +69,7 @@ public class Koopa : EnemyController
         Movement();
     }
 
-    public void handleKoopa(object[] args)
+    public void HandleKoopa(object[] args)
     {
         enemyController = (EnemyController)args[0];
         if (!enemyController.anim.GetBool("inShell"))
@@ -96,7 +96,7 @@ public class Koopa : EnemyController
 
                     case "koopa_shell":
                         c.enabled = true;
-                        c.size = sizes["koopa_shell"];
+                        c.size = vectors["Koopa_shell"];
                         break;
 
                 }
