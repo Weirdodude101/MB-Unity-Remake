@@ -25,6 +25,8 @@ public class EnemyController : GameBase
     public enum ETypes { Goomba, Koopa };
     public ETypes enemyType;
 
+    bool isColliding;
+
     protected readonly Dictionary<string, Vector2> vectors = new Dictionary<string, Vector2>
     {
         {"Koopa_collider", new Vector2(0.16f, 0.23f)},
@@ -71,6 +73,11 @@ public class EnemyController : GameBase
         PrepareGameObject();
     }
 
+    void Update()
+    {
+        isColliding = false;
+    }
+
     void PrepareGameObject() {
 
         gameObject.name = enemyType.ToString();
@@ -95,6 +102,7 @@ public class EnemyController : GameBase
         AudioClip clip = Resources.Load<AudioClip>(String.Format("Audio/{0}_sound", enemyType.ToString()));
         gbase.setMusic(audio, clip, false, false);
 
+        transform.tag = enemyType.ToString();
         transform.localScale = vectors[String.Format("{0}", enemyType.ToString())];
         bcollider.size = vectors[String.Format("{0}_collider", enemyType.ToString())];
         bcollider.offset = vectors[String.Format("{0}_offset", enemyType.ToString())];
@@ -110,8 +118,13 @@ public class EnemyController : GameBase
     public void SetSpeed(float speed)
     {
         enemySpeed = speed;
+
     }
 
+    public float GetSpeed(){
+        return enemySpeed;
+    }
+    
     public void SetDead(bool dead)
     {
         enemy.Dead = dead;
@@ -123,25 +136,28 @@ public class EnemyController : GameBase
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        /*
         if (enemyType == ETypes.Koopa)
         {
-            Koopa koopa = GetComponent<Koopa>();
-            if (koopa.anim.GetBool("inShell") && col.gameObject.tag == "collider")
+            if (enemy.anim.GetBool("inShell") && col.gameObject.tag == "collider")
             {
-                koopa.collided = true;
+                enemy.collided = true;
             }
                 
-        }*/
+        }
 
-        if (col.gameObject.tag == "collider")
+        if (col.gameObject.tag == "collider" || (Enum.IsDefined(typeof(ETypes), col.gameObject.tag) && col.gameObject.GetComponent<EnemyController>().enemyType != ETypes.Goomba))
+        {
+            if (isColliding) return;
+            isColliding = true;
             Flip();
+        }
     }
 
     protected void Flip()
     {
-        if (enemySpeed >= 0)
+        if (Mathf.Abs(enemySpeed) >= 0)
         {
+
             SetSpeed(-enemySpeed);
             spriteRenderer.flipX = true;
         }

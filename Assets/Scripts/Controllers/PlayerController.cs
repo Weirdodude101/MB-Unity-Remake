@@ -91,12 +91,11 @@ public class PlayerController : GameBase
     void OnTriggerEnter2D(Collider2D col)
     {
         EnemyController enemy = col.gameObject.GetComponentInParent<EnemyController>();
-        //Debug.Log(col.gameObject.tag);
         switch (col.gameObject.tag)
         {
             case "koopa_head_collider":
 
-                rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
+                Jump(jumpHeight-0.25f);
                 enemy.sendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
 
@@ -111,7 +110,7 @@ public class PlayerController : GameBase
                     handlePlayerDeath(enemy);
 
 
-                //koopa.ShellMove(col.gameObject.transform.localPosition.x);
+                koopa.ShellMove(col.gameObject.transform.localPosition.x);
                 break;
 
 
@@ -130,7 +129,7 @@ public class PlayerController : GameBase
         {
             if (onGround && !Dead)
             {
-                rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
+                Jump(jumpHeight);
                 onGround = false;
 
                 GetComponent<AudioSource>().Play();
@@ -141,6 +140,10 @@ public class PlayerController : GameBase
         anim.SetBool("onGround", onGround);
         anim.SetBool("spacePressed", !onGround);
 
+    }
+
+    void Jump(float height) {
+        rigidBody.velocity = new Vector2(0, height);
     }
 
     void Flip(float horizontal)

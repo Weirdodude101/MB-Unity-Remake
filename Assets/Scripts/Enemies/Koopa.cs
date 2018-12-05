@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System;
 public class Koopa : EnemyController
 {
 
@@ -16,6 +15,7 @@ public class Koopa : EnemyController
     internal bool collided;
     bool hitByKoopa;
 
+    float storedSpeed;
 
     public static Koopa koopa;
 
@@ -29,19 +29,23 @@ public class Koopa : EnemyController
         spriteRenderer = GetComponent<SpriteRenderer>();
         
         anim.SetFloat("time_left", time_left);
-        //setType(ETypes.Koopa);
 
     }
 
     void FixedUpdate()
     {
-        if (time_left <= 1)
+        ResetKoopa();
+        Movement();
+    }
+
+    public void ResetKoopa() {
+        if (time_left < 1)
         {
             anim.SetBool("inShell", false);
             shellMoving = false;
             time_left = 8f;
             bcollider.enabled = true;
-            SetSpeed(0.5f);
+            SetSpeed(storedSpeed);
 
             foreach (Transform child in transform)
             {
@@ -65,20 +69,23 @@ public class Koopa : EnemyController
             }
 
         }
+    }
 
-        Movement();
+    public void ResetShellTimer() {
+        time_left = 8f;
+        anim.SetFloat("time_left", time_left);
     }
 
     public void HandleKoopa(object[] args)
     {
-        enemyController = (EnemyController)args[0];
-        if (!enemyController.anim.GetBool("inShell"))
+        //enemyController = (EnemyController)args[0];
+        if (!anim.GetBool("inShell"))
         {
 
-            enemyController.anim.SetBool("inShell", true);
-            enemyController.bcollider.enabled = false;
-            enemyController.SetSpeed(0f);
-
+            anim.SetBool("inShell", true);
+            bcollider.enabled = false;
+            storedSpeed = GetSpeed();
+            SetSpeed(0f);
             foreach (Transform child in transform)
             {
                 BoxCollider2D c = child.GetComponent<BoxCollider2D>();
@@ -131,10 +138,11 @@ public class Koopa : EnemyController
 
     public void ShellMove(float localPos)
     {
-        if (anim.GetBool("inShell") && shellMoving)
+        if (anim.GetBool("inShell") && !shellMoving)
         {
             canKill = true;
-            time_left = 8f;
+            shellMoving = true;
+            ResetShellTimer();
             StartCoroutine(shellMove(localPos));
         }
     }
@@ -165,7 +173,7 @@ public class Koopa : EnemyController
 
     IEnumerator shellMove(float localPos)
     {
-        while (true)
+        while (shellMoving)
         {
 
             float v = hitSpeed;
@@ -185,7 +193,6 @@ public class Koopa : EnemyController
             }
 
 
-
             rigidBody.velocity = new Vector2(v, rigidBody.velocity.y);
 
             break;
@@ -194,7 +201,7 @@ public class Koopa : EnemyController
 
     IEnumerator koopa_countdown()
     {
-        while (time_left > 0 && !shellMoving)
+        while (time_left >= 0 && !shellMoving)
         {
             yield return new WaitForSeconds(1f);
             time_left -= 1;
@@ -213,6 +220,9 @@ public class Koopa : EnemyController
         if (!anim.GetBool("inShell"))
         {
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
+        }
+        if (GetSpeed() <= 0 && !shellMoving && anim.GetBool("inShell")) {
+            rigidBody.velocity = new Vector2(0f, 0f);
         }
     }
 

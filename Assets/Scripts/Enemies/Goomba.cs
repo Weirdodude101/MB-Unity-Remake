@@ -59,6 +59,8 @@ public class Goomba : EnemyController
                 }
 
                 break;
+
+  
         }
     }
 
