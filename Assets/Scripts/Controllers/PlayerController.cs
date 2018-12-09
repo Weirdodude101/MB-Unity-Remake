@@ -93,11 +93,6 @@ public class PlayerController : GameBase
         EnemyController enemy = col.gameObject.GetComponentInParent<EnemyController>();
         switch (col.gameObject.tag)
         {
-            case "koopa_head_collider":
-
-                Jump(jumpHeight-0.25f);
-                enemy.sendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
-                break;
 
             case "enemy_body_collider":
                 if (!enemy.IsDead())
@@ -115,6 +110,7 @@ public class PlayerController : GameBase
 
 
             default:
+                Jump(jumpHeight - 0.25f);
                 enemy.sendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
         }

@@ -3,7 +3,7 @@ using System.Collections;
 public class Koopa : EnemyController
 {
 
-    public const float hitSpeed = 2f;
+    public const float hitSpeed = 4f;
 
 
     public bool shellMoving;
@@ -34,38 +34,34 @@ public class Koopa : EnemyController
 
     void FixedUpdate()
     {
-        ResetKoopa();
         Movement();
     }
 
-    public void ResetKoopa() {
-        if (time_left < 1)
+    public void ResetKoopa()
+    {
+        anim.SetBool("inShell", false);
+        shellMoving = false;
+
+        bcollider.enabled = true;
+        SetSpeed(storedSpeed);
+
+        foreach (Transform child in transform)
         {
-            anim.SetBool("inShell", false);
-            shellMoving = false;
-            time_left = 8f;
-            bcollider.enabled = true;
-            SetSpeed(storedSpeed);
-
-            foreach (Transform child in transform)
+            BoxCollider2D c = child.GetComponent<BoxCollider2D>();
+            switch (child.tag)
             {
-                BoxCollider2D c = child.GetComponent<BoxCollider2D>();
-                switch (child.tag)
-                {
-                    case "koopa_side_collider":
-                        c.isTrigger = false;
-                        break;
+                case "koopa_side_collider":
+                    c.isTrigger = false;
+                    break;
 
-                    case "enemy_body_collider":
-                        c.isTrigger = true;
-                        c.size = vectors["enemy_body_collider"];
-                        break;
+                case "enemy_body_collider":
+                    c.isTrigger = true;
+                    c.size = vectors["enemy_body_collider"];
+                    break;
 
-                    case "koopa_shell":
-                        c.enabled = false;
-                        break;
-
-                }
+                case "koopa_shell":
+                    c.enabled = false;
+                    break;
             }
 
         }
@@ -73,6 +69,11 @@ public class Koopa : EnemyController
 
     public void ResetShellTimer() {
         time_left = 8f;
+        anim.SetFloat("time_left", time_left);
+    }
+
+    public void DecrementShellTimer() {
+        time_left -= 1;
         anim.SetFloat("time_left", time_left);
     }
 
@@ -159,8 +160,7 @@ public class Koopa : EnemyController
                 bcollider.enabled = false;
                 foreach (Transform child in transform)
                 {
-                    BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
-                    collider2D.enabled = false;
+                    child.GetComponent<BoxCollider2D>().enabled = false;
                 }
 
 
@@ -201,12 +201,16 @@ public class Koopa : EnemyController
 
     IEnumerator koopa_countdown()
     {
-        while (time_left >= 0 && !shellMoving)
+        while (time_left > 0 && !shellMoving)
         {
             yield return new WaitForSeconds(1f);
-            time_left -= 1;
-            anim.SetFloat("time_left", time_left);
+            DecrementShellTimer();
         }
+
+        if (time_left <= 0) {
+            ResetKoopa();
+        }
+
     }
 
     public float getXVel()
@@ -219,6 +223,9 @@ public class Koopa : EnemyController
 
         if (!anim.GetBool("inShell"))
         {
+            if (time_left < 8)
+                ResetShellTimer();
+
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
         }
         if (GetSpeed() <= 0 && !shellMoving && anim.GetBool("inShell")) {
