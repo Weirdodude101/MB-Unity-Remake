@@ -136,19 +136,20 @@ public class EnemyController : GameBase
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        if (isColliding) return;
+        isColliding = true;
+
         if (enemyType == ETypes.Koopa)
         {
-            if (enemy.anim.GetBool("inShell") && col.gameObject.tag == "collider")
+            if (enemy.anim.GetBool("inShell") && (col.gameObject.tag == "collider" || col.gameObject.tag == "Block"))
             {
                 enemy.collided = true;
             }
                 
         }
 
-        if (col.gameObject.tag == "collider" || (Enum.IsDefined(typeof(ETypes), col.gameObject.tag) && col.gameObject.GetComponent<EnemyController>().enemyType != ETypes.Goomba))
+        if (col.gameObject.tag == "collider" || col.gameObject.tag == "Block" || (Enum.IsDefined(typeof(ETypes), col.gameObject.tag) && col.gameObject.GetComponent<EnemyController>().enemyType != ETypes.Goomba))
         {
-            if (isColliding) return;
-            isColliding = true;
             Flip();
         }
     }
@@ -157,9 +158,8 @@ public class EnemyController : GameBase
     {
         if (Mathf.Abs(enemySpeed) >= 0)
         {
-
             SetSpeed(-enemySpeed);
-            spriteRenderer.flipX = true;
+            spriteRenderer.flipX = !spriteRenderer.flipX;
         }
     }
 }

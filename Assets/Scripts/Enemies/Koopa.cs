@@ -1,10 +1,13 @@
 using UnityEngine;
+using System;
 using System.Collections;
+
+
 public class Koopa : EnemyController
 {
 
     public const float hitSpeed = 4f;
-
+    float tempSpeed;
 
     public bool shellMoving;
     public bool canKill;
@@ -79,7 +82,6 @@ public class Koopa : EnemyController
 
     public void HandleKoopa(object[] args)
     {
-        //enemyController = (EnemyController)args[0];
         if (!anim.GetBool("inShell"))
         {
 
@@ -148,6 +150,27 @@ public class Koopa : EnemyController
         }
     }
 
+    IEnumerator shellMove(float localPos)
+    {
+        while (shellMoving)
+        {
+
+            yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
+
+            if (localPos > 0)
+            {
+                Debug.Log("v = -hitSpeed: " + localPos);
+                tempSpeed = -hitSpeed;
+            }
+
+            if (collided)
+            {
+                tempSpeed *= -1;
+            }
+
+        }
+    }
+
     IEnumerator Death(float t)
     {
         while (true)
@@ -167,35 +190,6 @@ public class Koopa : EnemyController
             }
             yield return new WaitForSeconds(t);
             Destroy(gameObject);
-        }
-    }
-
-
-    IEnumerator shellMove(float localPos)
-    {
-        while (shellMoving)
-        {
-
-            float v = hitSpeed;
-
-            yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
-
-            if (localPos > 0)
-            {
-                Debug.Log("v = -hitSpeed: " + localPos);
-                v = -hitSpeed;
-            }
-
-            if (collided)
-            {
-                Debug.Log("v *= -1");
-                v *= -1;
-            }
-
-
-            rigidBody.velocity = new Vector2(v, rigidBody.velocity.y);
-
-            break;
         }
     }
 
@@ -220,6 +214,12 @@ public class Koopa : EnemyController
 
     void Movement()
     {
+
+        while (shellMoving)
+        {
+            rigidBody.velocity = new Vector2(tempSpeed, rigidBody.velocity.y);
+            break;
+        }
 
         if (!anim.GetBool("inShell"))
         {

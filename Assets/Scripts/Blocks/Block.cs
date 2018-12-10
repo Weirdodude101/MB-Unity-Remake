@@ -36,15 +36,12 @@ public class Block : GameBase
         
         SetType(blockType);
 
-
-
     }
 
 
 
     void OnCollisionEnter2D(Collision2D col)
     {
-    
         if (getSide(col.gameObject.transform, gameObject.transform, true) == 1 && player.velocity.y > 0 && blockType != BlockTypes.Used)
         {
             if (contains == Contains.Empty)

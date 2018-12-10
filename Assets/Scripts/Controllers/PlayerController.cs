@@ -33,7 +33,7 @@ public class PlayerController : GameBase
         anim = GetComponent<Animator>();
         music = GameObject.Find("Main Camera").GetComponent<AudioSource>();
 
-
+        transform.tag = "Player";
     }
 
     void FixedUpdate()
