@@ -42,16 +42,19 @@ public class Block : GameBase
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (getSide(col.gameObject.transform, gameObject.transform, true) == 1 && player.velocity.y > 0 && blockType != BlockTypes.Used)
+        if (col.gameObject.tag != "Koopa")
         {
-            if (contains == Contains.Empty)
+            if (GetSide(col.gameObject.transform, gameObject.transform, true) == 1 && player.velocity.y > 0 && blockType != BlockTypes.Used)
             {
-                Destroy(gameObject);
-            }
-            else
-            {
-                StartCoroutine(Bounce());
-                SetType(BlockTypes.Used);
+                if (contains == Contains.Empty)
+                {
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    StartCoroutine(Bounce());
+                    SetType(BlockTypes.Used);
+                }
             }
         }
     }

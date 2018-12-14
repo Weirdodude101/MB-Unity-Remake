@@ -71,6 +71,8 @@ public class EnemyController : GameBase
 
         SetType(enemyType);
         PrepareGameObject();
+
+        enabled = false;
     }
 
     void Update()
@@ -100,7 +102,7 @@ public class EnemyController : GameBase
         }
 
         AudioClip clip = Resources.Load<AudioClip>(String.Format("Audio/{0}_sound", enemyType.ToString()));
-        gbase.setMusic(audio, clip, false, false);
+        gbase.SetMusic(audio, clip, false, false);
 
         transform.tag = enemyType.ToString();
         transform.localScale = vectors[String.Format("{0}", enemyType.ToString())];

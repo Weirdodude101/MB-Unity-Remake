@@ -51,7 +51,7 @@ public class PlayerController : GameBase
     {
         if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Block")
         {
-            if (gbase.getSide(gameObject.transform, col.gameObject.transform, true) == 0)
+            if (gbase.GetSide(gameObject.transform, col.gameObject.transform, true) == 0)
                 onGround = true;
         }
 
@@ -76,7 +76,7 @@ public class PlayerController : GameBase
         Dead = true;
         anim.SetBool("death", Dead);
 
-        gbase.setMusic(music, deathSound, false, true);
+        gbase.SetMusic(music, deathSound, false, true);
 
         playerSpeed = 0;
 
@@ -102,16 +102,16 @@ public class PlayerController : GameBase
             case "koopa_side_collider":
                 Koopa koopa = col.gameObject.GetComponentInParent<Koopa>();
                 if (koopa.canKill)
-                    handlePlayerDeath(enemy);
+                    goto case "enemy_body_collider";
 
 
-                koopa.ShellMove(col.gameObject.transform.localPosition.x);
+                koopa.ShellMove(gbase.GetSide(gameObject.transform, col.gameObject.transform, false));
                 break;
 
 
             default:
                 Jump(jumpHeight - 0.25f);
-                enemy.sendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
+                enemy.SendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
         }
     }

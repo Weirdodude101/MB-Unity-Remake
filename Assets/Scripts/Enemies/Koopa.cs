@@ -139,28 +139,28 @@ public class Koopa : EnemyController
         }
     }
 
-    public void ShellMove(float localPos)
+    public void ShellMove(int side)
     {
         if (anim.GetBool("inShell") && !shellMoving)
         {
             canKill = true;
             shellMoving = true;
             ResetShellTimer();
-            StartCoroutine(shellMove(localPos));
+            StartCoroutine(shellMove(side));
         }
     }
 
-    IEnumerator shellMove(float localPos)
+    IEnumerator shellMove(int side)
     {
         while (shellMoving)
         {
-
+            
             yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
 
-            if (localPos > 0)
+            tempSpeed = -hitSpeed;
+            if (side == 3)
             {
-                Debug.Log("v = -hitSpeed: " + localPos);
-                tempSpeed = -hitSpeed;
+                tempSpeed = hitSpeed;
             }
 
             if (collided)

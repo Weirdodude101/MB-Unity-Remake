@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class GameBase : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class GameBase : MonoBehaviour
         gbase = this;
     }
 
-    public bool sendMethod(params object[] objects)
+    public bool SendMethod(params object[] objects)
     {
         object[] args = new object[objects.Length];
         for (int i = 1; i < objects.Length; i++)
@@ -22,7 +23,7 @@ public class GameBase : MonoBehaviour
         return true;
     }
 
-    public void setMusic(AudioSource source, AudioClip clip, bool loop, bool play)
+    public void SetMusic(AudioSource source, AudioClip clip, bool loop, bool play)
     {
         source.Stop();
         source.clip = clip;
@@ -41,7 +42,7 @@ public class GameBase : MonoBehaviour
         }
     }
 
-    public int getSide(Transform t0, Transform t1, bool top)
+    public int GetSide(Transform t0, Transform t1, bool top)
     {
         Vector2 dir = (t0.position - t1.position).normalized;
         //Debug.Log(dir.x);
@@ -66,4 +67,5 @@ public class GameBase : MonoBehaviour
 
         return 4;
     }
+
 }
