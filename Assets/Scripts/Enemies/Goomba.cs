@@ -18,6 +18,8 @@ public class Goomba : EnemyController
         bcollider = GetComponent<BoxCollider2D>();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        SetEnemyInstance(this);
     }
 
     void FixedUpdate()

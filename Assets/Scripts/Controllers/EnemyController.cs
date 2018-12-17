@@ -75,6 +75,10 @@ public class EnemyController : GameBase
         enabled = false;
     }
 
+    internal void SetEnemyInstance(dynamic e) {
+        enemy = e;
+    }
+
     void Update()
     {
         isColliding = false;
@@ -112,7 +116,7 @@ public class EnemyController : GameBase
 
     public void SetType(ETypes type)
     {
-        enemyType = type;
+        enemy.enemyType = type;
         spriteRenderer.sprite = gbase.dictSprites["enemy_sprites_" + type2Id[enemyType].ToString()];
         anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load(string.Format("Animations/Enemies/{0}/{1}_controller", enemyType.ToString(), enemyType.ToString().ToLower()));
     }
@@ -145,9 +149,9 @@ public class EnemyController : GameBase
         {
             if (enemy.anim.GetBool("inShell") && (col.gameObject.tag == "collider" || col.gameObject.tag == "Block"))
             {
-                enemy.collided = true;
+                 enemy.collided = true;
             }
-                
+       
         }
 
         if (col.gameObject.tag == "collider" || col.gameObject.tag == "Block" || (Enum.IsDefined(typeof(ETypes), col.gameObject.tag) && col.gameObject.GetComponent<EnemyController>().enemyType != ETypes.Goomba))

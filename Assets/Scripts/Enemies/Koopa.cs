@@ -33,6 +33,9 @@ public class Koopa : EnemyController
         
         anim.SetFloat("time_left", time_left);
 
+        SetEnemyInstance(this);
+
+
     }
 
     void FixedUpdate()
@@ -152,21 +155,20 @@ public class Koopa : EnemyController
 
     IEnumerator shellMove(int side)
     {
+        tempSpeed = -hitSpeed;
+
+        if (side == 3) {
+            tempSpeed = hitSpeed;
+        }
         while (shellMoving)
         {
-            
+
             yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
-
-            tempSpeed = -hitSpeed;
-            if (side == 3)
-            {
-                tempSpeed = hitSpeed;
-            }
-
+            
             if (collided)
-            {
                 tempSpeed *= -1;
-            }
+
+            yield return new WaitForFixedUpdate();
 
         }
     }
@@ -217,6 +219,7 @@ public class Koopa : EnemyController
 
         while (shellMoving)
         {
+               
             rigidBody.velocity = new Vector2(tempSpeed, rigidBody.velocity.y);
             break;
         }
