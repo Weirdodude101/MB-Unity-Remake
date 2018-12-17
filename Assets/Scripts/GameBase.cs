@@ -23,6 +23,14 @@ public class GameBase : MonoBehaviour
         return true;
     }
 
+    public bool isPrime(int n)
+    {
+        for (int i=2; i < n; i++)
+          if (n %i == 0) 
+            return false;
+        return true;
+    }
+
     public void SetMusic(AudioSource source, AudioClip clip, bool loop, bool play)
     {
         source.Stop();

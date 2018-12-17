@@ -108,9 +108,8 @@ public class PlayerController : GameBase
                 koopa.ShellMove(gbase.GetSide(gameObject.transform, col.gameObject.transform, false));
                 break;
 
-
             default:
-                Jump(jumpHeight - 0.25f);
+                Jump(3f);
                 enemy.SendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
         }

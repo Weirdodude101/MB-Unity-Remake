@@ -6,7 +6,7 @@ using System.Collections;
 public class Koopa : EnemyController
 {
 
-    public const float hitSpeed = 4f;
+    public const float hitSpeed = 3f;
     float tempSpeed;
 
     public bool shellMoving;
@@ -17,6 +17,8 @@ public class Koopa : EnemyController
 
     internal bool collided;
     bool hitByKoopa;
+
+    bool countingDown;
 
     float storedSpeed;
 
@@ -50,6 +52,7 @@ public class Koopa : EnemyController
 
         bcollider.enabled = true;
         SetSpeed(storedSpeed);
+        
 
         foreach (Transform child in transform)
         {
@@ -73,21 +76,43 @@ public class Koopa : EnemyController
         }
     }
 
-    public void ResetShellTimer() {
+    public void ResetShellTimer()
+    {
         time_left = 8f;
         anim.SetFloat("time_left", time_left);
     }
 
-    public void DecrementShellTimer() {
+    public void DecrementShellTimer()
+    {
         time_left -= 1;
         anim.SetFloat("time_left", time_left);
+    }
+
+    public void StopShell()
+    {
+        ResetShellTimer();
+        shellMoving = false;
+        canKill = false;
+    }
+
+    public void FlipShell()
+    {
+
+        if (base.isPrime((int)Math.Floor(Time.time)))
+        {
+            storedSpeed *= -1;
+            if (storedSpeed < 0)
+                spriteRenderer.flipX = true;
+            
+            if (storedSpeed > 0)
+                spriteRenderer.flipX = false;
+        }
     }
 
     public void HandleKoopa(object[] args)
     {
         if (!anim.GetBool("inShell"))
         {
-
             anim.SetBool("inShell", true);
             bcollider.enabled = false;
             storedSpeed = GetSpeed();
@@ -114,8 +139,12 @@ public class Koopa : EnemyController
 
                 }
             }
-            StartCoroutine(koopa_countdown());
+        } else
+        {
+        
+            StopShell();
         }
+        StartCoroutine(koopa_countdown());
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -156,7 +185,6 @@ public class Koopa : EnemyController
     IEnumerator shellMove(int side)
     {
         tempSpeed = -hitSpeed;
-
         if (side == 3) {
             tempSpeed = hitSpeed;
         }
@@ -166,7 +194,9 @@ public class Koopa : EnemyController
             yield return new WaitUntil(() => Mathf.Abs(rigidBody.velocity.x) < hitSpeed);
             
             if (collided)
+            {
                 tempSpeed *= -1;
+            }
 
             yield return new WaitForFixedUpdate();
 
@@ -197,16 +227,19 @@ public class Koopa : EnemyController
 
     IEnumerator koopa_countdown()
     {
-        while (time_left > 0 && !shellMoving)
+        if(!countingDown)
         {
-            yield return new WaitForSeconds(1f);
-            DecrementShellTimer();
-        }
+            countingDown = true;
+            while (time_left > 0 && !shellMoving)
+            {
+                yield return new WaitForSeconds(1f);
+                DecrementShellTimer();
+            }
 
-        if (time_left <= 0) {
-            ResetKoopa();
+            if (time_left <= 0) {
+                ResetKoopa();
+            }
         }
-
     }
 
     public float getXVel()
@@ -218,8 +251,7 @@ public class Koopa : EnemyController
     {
 
         while (shellMoving)
-        {
-               
+        {    
             rigidBody.velocity = new Vector2(tempSpeed, rigidBody.velocity.y);
             break;
         }
