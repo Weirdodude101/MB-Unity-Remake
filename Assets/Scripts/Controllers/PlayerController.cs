@@ -57,7 +57,7 @@ public class PlayerController : GameBase
 
     }
 
-    bool handlePlayerDeath(EnemyController enemy = null)
+    bool HandlePlayerDeath(EnemyController enemy = null)
     {
         if (enemy)
         {
@@ -96,7 +96,7 @@ public class PlayerController : GameBase
 
             case "enemy_body_collider":
                 if (!enemy.IsDead())
-                    handlePlayerDeath(enemy);
+                    HandlePlayerDeath(enemy);
                 break;
 
             case "koopa_side_collider":

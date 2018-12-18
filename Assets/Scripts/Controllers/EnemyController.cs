@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using System;
 
 
@@ -26,6 +27,9 @@ public class EnemyController : GameBase
     public ETypes enemyType;
 
     bool isColliding;
+    bool onScreen;
+    bool running;
+
 
     protected readonly Dictionary<string, Vector2> vectors = new Dictionary<string, Vector2>
     {
@@ -81,13 +85,22 @@ public class EnemyController : GameBase
 
     void Update()
     {
+
+        Vector3 screenPoint = GameObject.Find("Main Camera").GetComponent<Camera>().WorldToViewportPoint(transform.position);
+        onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
+        IEnumerator co = OffScreenDestroy();
+
+        if (!onScreen && !running)
+            StartCoroutine(co);
+
+
         isColliding = false;
     }
 
     void PrepareGameObject() {
 
         gameObject.name = enemyType.ToString();
-
+        gameObject.layer = 9;
         GameObject model_load = GameObject.Find(String.Format("model_{0}", gameObject.name));
         foreach (Transform child in model_load.transform)
         {
@@ -102,7 +115,7 @@ public class EnemyController : GameBase
             }
 
             child.gameObject.name = child.gameObject.name.Substring(0, child.name.Length - 7);
-
+            child.gameObject.layer = 9;
         }
 
         AudioClip clip = Resources.Load<AudioClip>(String.Format("Audio/{0}_sound", enemyType.ToString()));
@@ -112,6 +125,20 @@ public class EnemyController : GameBase
         transform.localScale = vectors[String.Format("{0}", enemyType.ToString())];
         bcollider.size = vectors[String.Format("{0}_collider", enemyType.ToString())];
         bcollider.offset = vectors[String.Format("{0}_offset", enemyType.ToString())];
+    }
+
+    IEnumerator OffScreenDestroy()
+    {
+        running = true;
+        yield return new WaitUntil(() => !onScreen);
+
+        yield return new WaitForSeconds(1f);
+
+        if (!onScreen)
+            Destroy(gameObject);
+
+        running = false;
+
     }
 
     public void SetType(ETypes type)
@@ -124,7 +151,6 @@ public class EnemyController : GameBase
     public void SetSpeed(float speed)
     {
         enemySpeed = speed;
-
     }
 
     public float GetSpeed(){
@@ -149,9 +175,8 @@ public class EnemyController : GameBase
         {
             if (enemy.anim.GetBool("inShell") && (col.gameObject.tag == "collider" || col.gameObject.tag == "Block"))
             {
-                 enemy.collided = true;
+                enemy.collided = true;
             }
-       
         }
 
         if (col.gameObject.tag == "collider" || col.gameObject.tag == "Block" || (Enum.IsDefined(typeof(ETypes), col.gameObject.tag) && col.gameObject.GetComponent<EnemyController>().enemyType != ETypes.Goomba))

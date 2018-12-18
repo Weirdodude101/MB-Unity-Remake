@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         DontDestroyOnLoad(gameObject);
+
         foreach (GameObject obj in FindObjectsOfType(typeof(GameObject)))
         {
             if (obj.name.StartsWith("model_", StringComparison.Ordinal))
@@ -17,6 +18,8 @@ public class GameManager : MonoBehaviour
 
         if (GetCurrentSceneName() == "Main")
             LoadScene("enemy_test");
+
+        Physics2D.IgnoreLayerCollision(8, 9, true);
     }
 
 
