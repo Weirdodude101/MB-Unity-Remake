@@ -57,18 +57,19 @@ public class PlayerController : GameBase
 
     }
 
-    bool HandlePlayerDeath(EnemyController enemy = null)
+    public void HandlePlayerDeath(EnemyController enemy = null)
     {
         if (enemy)
         {
             if (!enemy.Dead)
             {
                 StartCoroutine(Death());
-                return true;
             }
-            return false;
         }
-        return false;
+        else
+        {
+            StartCoroutine(Death());
+        }
     }
 
     IEnumerator Death()
