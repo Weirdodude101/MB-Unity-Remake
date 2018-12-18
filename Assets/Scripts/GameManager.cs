@@ -8,7 +8,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public Dictionary<string, Sprite> dictSprites = new Dictionary<string, Sprite>();
-
+    protected readonly Dictionary<string, int> level2Time = new Dictionary<string, int>
+    {
+        {"1-1", 900},
+        {"1-2", 300},
+    };
 
 
     private GameObject _player;
@@ -17,14 +21,15 @@ public class GameManager : MonoBehaviour
     private GameObject _worldVisual;
     private GameObject _timerVisual;
 
-    private string _world;
+    private int _world = 0;
+    private int _level = 8;
     private int _lives;
     private int _score;
     private int _coins;
     private int _timeRemaining;
-    private int _timeAvailable;
     private bool _timeRunning;
 
+    private IEnumerator _timerCo;
 
     void Start()
     {
@@ -34,6 +39,7 @@ public class GameManager : MonoBehaviour
         _worldVisual = GameObject.Find("Top_HUD/Main/WORLD/world-level");
         _timerVisual = GameObject.Find("Top_HUD/Main/TIME/time");
 
+        _timerCo = Timer();
 
         Setup();
     }
@@ -50,29 +56,77 @@ public class GameManager : MonoBehaviour
                 DontDestroyOnLoad(obj);
         }
 
-        if (GetCurrentSceneName() == "Main")
-            LoadScene("enemy_test");
-
         Physics2D.IgnoreLayerCollision(8, 9, true);
 
+        LoadNextWorld();
+
+    }
+
+    public void SetupTimer()
+    {
         if (!_timeRunning)
         {
-            SetTimeRemaining(15);
+            SetTimeRemaining(level2Time[GetVisualWorld(GetWorld(), GetLevel())]);
 
-            StartCoroutine(Timer());
+            _timerCo = Timer();
+            StartCoroutine(_timerCo);
+
             _timeRunning = true;
         }
     }
 
-    public void SetTimeAvailable(int timeAvailable) {
-        _timeAvailable = timeAvailable;
+    public void ManageHUD()
+    {
+        _timerVisual.GetComponent<Text>().text = GetVisualTimeRemaining(GetTimeRemaining());
+        _worldVisual.GetComponent<Text>().text = GetVisualWorld(GetWorld(), GetLevel());
     }
 
-    public int GetTimeAvailable() {
-        return _timeAvailable;
+    public void LoadNextWorld()
+    {
+        if (_timeRunning)
+        {
+            _timeRunning = false;
+            StopCoroutine(_timerCo);
+        }
+
+        if (GetLevel() + 1 > 8)
+        {
+            SetWorld(GetWorld() + 1);
+            SetLevel(0);
+        }
+        SetLevel(GetLevel() + 1);
+
+        LoadScene(String.Format("Scenes/{0}/{1}", GetWorld(), GetLevel()));
+
+        SetupTimer();
     }
 
-    public string GetVisualTimeRemaining(int timeRemaining) {
+    public string GetVisualWorld(int world, int level)
+    {
+        return world + "-" + level;
+    }
+
+    public void SetWorld(int world)
+    {
+        _world = world;
+    }
+
+    public int GetWorld() {
+        return _world;
+    }
+
+    public void SetLevel(int level)
+    {
+        _level = level;
+    }
+
+    public int GetLevel()
+    {
+        return _level;
+    }
+
+    public string GetVisualTimeRemaining(int timeRemaining)
+    {
         string result = "";
 
         string remaining = timeRemaining.ToString();
@@ -88,15 +142,19 @@ public class GameManager : MonoBehaviour
         return result;
     }
 
-    public void SetTimeRemaining(int timeRemaining) {
+    public void SetTimeRemaining(int timeRemaining)
+    {
         _timeRemaining = timeRemaining;
     }
 
-    public int GetTimeRemaining() {
+    public int GetTimeRemaining()
+    {
         return _timeRemaining;
     }
     
-    IEnumerator Timer() {
+    IEnumerator Timer()
+    {
+
         while (GetTimeRemaining() > 0)
         {
             yield return new WaitForSeconds(0.4f);
@@ -113,16 +171,9 @@ public class GameManager : MonoBehaviour
     
     void FixedUpdate()
     {
-        _timerVisual.GetComponent<Text>().text = GetVisualTimeRemaining(GetTimeRemaining());
 
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            LoadScene("itemblock_test");
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            LoadScene("enemy_test");
-        }
+        ManageHUD();
+
     }
 
     void LoadScene(string sceneName) 
