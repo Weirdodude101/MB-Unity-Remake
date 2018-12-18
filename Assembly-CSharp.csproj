@@ -68,6 +68,8 @@
     <Compile Include="Assets\Scripts\Enemies\Koopa.cs" />
     <Compile Include="Assets\Scripts\GameBase.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
+    <None Include="Assets\Resources\Fonts\LICENSE.txt" />
+    <None Include="Assets\Resources\Fonts\FONTLOG.txt" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>/Users/main/Desktop/Projects/MB-Unity-Remake/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
