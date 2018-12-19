@@ -152,7 +152,7 @@ public class GameManager : MonoBehaviour
     {
         string zeros = GetVisualZeros(6, score);
 
-        return zeros += score;
+        return zeros + score;
     }
 
     public void SetScore(int score)
@@ -185,7 +185,7 @@ public class GameManager : MonoBehaviour
     {
         string zeros = GetVisualZeros(2, coins);
 
-        return zeros += coins;
+        return "x" + zeros + coins;
     }
 
     public void SetCoins(int coins)
