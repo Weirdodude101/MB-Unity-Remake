@@ -79,6 +79,79 @@ public class GameManager : MonoBehaviour
     {
         _timerVisual.GetComponent<Text>().text = GetVisualTimeRemaining(GetTimeRemaining());
         _worldVisual.GetComponent<Text>().text = GetVisualWorld(GetWorld(), GetLevel());
+        _coinsVisual.GetComponent<Text>().text = GetVisualCoins(GetCoins());
+        _scoreVisual.GetComponent<Text>().text = GetVisualScore(GetScore());
+    }
+
+
+    public string GetVisualZeros(int len, int data)
+    {
+
+        string result = "";
+
+        string dataStr = data.ToString();
+
+        int zeros = len - dataStr.Length;
+
+        for (int i = 0; i < zeros; i++)
+        {
+            result += "0";
+        }
+
+        return result;
+    }
+
+    public void IncrementScore(int amount) {
+        SetScore(GetScore() + amount);
+    }
+
+    public string GetVisualScore(int score) {
+        string zeros = GetVisualZeros(6, score);
+
+        return zeros += score;
+    }
+
+    public void SetScore(int score)
+    {
+        _score = score;
+    }
+
+    public int GetScore()
+    {
+        return _score;
+    }
+
+    public void IncrementCoins()
+    {
+        int coins = GetCoins();
+
+        if (coins >= 99)
+        {
+            SetCoins(0);
+            // IncrementLives
+        }
+        else
+        {
+
+            SetCoins(GetCoins() + 1);
+        }
+    }
+
+    public string GetVisualCoins(int coins)
+    {
+        string zeros = GetVisualZeros(2, coins);
+
+        return zeros += coins;
+    }
+
+    public void SetCoins(int coins)
+    {
+        _coins = coins;
+    }
+
+    public int GetCoins()
+    {
+        return _coins;
     }
 
     public void LoadNextWorld()
@@ -127,19 +200,9 @@ public class GameManager : MonoBehaviour
 
     public string GetVisualTimeRemaining(int timeRemaining)
     {
-        string result = "";
+        string zeros = GetVisualZeros(3, timeRemaining);
 
-        string remaining = timeRemaining.ToString();
-
-        int zeros = 3 - remaining.Length;
-
-        for (int i = 0; i < zeros; i++)
-        {
-            result += "0";
-        }
-        result += remaining;
-
-        return result;
+        return zeros += timeRemaining;
     }
 
     public void SetTimeRemaining(int timeRemaining)
