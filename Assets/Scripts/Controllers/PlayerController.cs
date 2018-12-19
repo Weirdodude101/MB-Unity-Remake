@@ -25,7 +25,7 @@ public class PlayerController : GameBase
 
     void Start()
     {
-        //_gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         Setup();
 
@@ -57,37 +57,6 @@ public class PlayerController : GameBase
 
     }
 
-    bool HandlePlayerDeath(EnemyController enemy = null)
-    {
-        if (enemy)
-        {
-            if (!enemy.Dead)
-            {
-                StartCoroutine(Death());
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
-
-    IEnumerator Death()
-    {
-        Dead = true;
-        anim.SetBool("death", Dead);
-
-        gbase.SetMusic(music, deathSound, false, true);
-
-        playerSpeed = 0;
-
-        while (true) {
-            rigidBody.AddForce(new Vector2(0, jumpHeight-0.75f), ForceMode2D.Impulse);
-            Destroy(GetComponent<BoxCollider2D>());
-            yield return new WaitForSeconds(3f);
-            Destroy(gameObject);
-        }
-    }
-
     void OnTriggerEnter2D(Collider2D col)
     {
         EnemyController enemy = col.gameObject.GetComponentInParent<EnemyController>();
@@ -112,6 +81,47 @@ public class PlayerController : GameBase
                 Jump(3f);
                 enemy.SendMethod(string.Format("Handle{0}", enemy.enemyType.ToString()), enemy);
                 break;
+        }
+    }
+
+    public void HandlePlayerDeath(EnemyController enemy = null)
+    {
+        if (enemy)
+        {
+            if (!enemy.Dead)
+            {
+                StartCoroutine(Death());
+            }
+        }
+        else
+        {
+            StartCoroutine(Death());
+        }
+    }
+
+    public bool IsDead()
+    {
+        return Dead;
+    }
+
+    IEnumerator Death()
+    {
+        Dead = true;
+        anim.SetBool("death", Dead);
+
+        gbase.SetMusic(music, deathSound, false, true);
+
+        playerSpeed = 0;
+
+        while (true)
+        {
+            if (onGround)
+                rigidBody.AddForce(new Vector2(0, jumpHeight - 0.75f), ForceMode2D.Impulse);
+            Destroy(GetComponent<BoxCollider2D>());
+            yield return new WaitForSeconds(3f);
+
+            _gameManager.DecrementLives();
+            Destroy(gameObject);
         }
     }
 

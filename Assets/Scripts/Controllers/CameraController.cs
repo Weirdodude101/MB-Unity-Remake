@@ -4,7 +4,8 @@ using System.Collections;
 public class CameraController : MonoBehaviour
 {
 
-    Transform Player;
+    
+    GameObject Player;
 
 
 
@@ -14,15 +15,13 @@ public class CameraController : MonoBehaviour
 
     readonly float minX = -3.293317f;
 
-    // Use this for initialization
     void Start()
     {
-        Player = GameObject.Find("Player").transform;
+        Player = GameObject.Find("Player");
         
         gameObject.layer = 8;
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Debugging code so I can move past the edge of the screen
@@ -31,14 +30,19 @@ public class CameraController : MonoBehaviour
             freeMoving = !freeMoving;
         }
 
-        if (!freeMoving)
+        if (Player != null)
         {
-            if (Player.transform.position.x > transform.position.x - offset.x)
+            if (!freeMoving)
             {
-                transform.position = new Vector3(Player.position.x + offset.x, offset.y, offset.z);
+                if (Player.transform.position.x > transform.position.x - offset.x)
+                {
+                    transform.position = new Vector3(Player.transform.position.x + offset.x, offset.y, offset.z);
+                }
             }
-        } else {
-            transform.position = new Vector3(Player.position.x + offset.x, offset.y, offset.z);
+            else
+            {
+                transform.position = new Vector3(Player.transform.position.x + offset.x, offset.y, offset.z);
+            }
         }
     }
 }

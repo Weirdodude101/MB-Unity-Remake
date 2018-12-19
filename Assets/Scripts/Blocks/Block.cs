@@ -24,7 +24,7 @@ public class Block : GameBase
     
     void Start()
     {
-        //_gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         Setup();
 

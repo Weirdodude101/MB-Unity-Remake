@@ -7,6 +7,8 @@ using System;
 public class EnemyController : GameBase
 {
 
+    GameManager _gameManager;
+
     public bool Dead;
     public Animator anim;
     public AudioSource audio;
@@ -61,6 +63,8 @@ public class EnemyController : GameBase
     void Start()
     {
         Setup();
+
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         gameObject.AddComponent(type2Class[enemyType]);
 
