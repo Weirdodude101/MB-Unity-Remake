@@ -10,8 +10,8 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, Sprite> dictSprites = new Dictionary<string, Sprite>();
     protected readonly Dictionary<string, int> level2Time = new Dictionary<string, int>
     {
-        {"1-1", 900},
-        {"1-2", 300},
+        {"1-1", 400},
+        {"1-2", 400},
     };
 
 
@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour
         if (coins >= 99)
         {
             SetCoins(0);
-            // IncrementLives
+            IncrementLives();
         }
         else
         {
@@ -212,8 +212,7 @@ public class GameManager : MonoBehaviour
             SetLevel(0);
         }
         SetLevel(GetLevel() + 1);
-
-        LoadWorld(GetWorld(), GetLevel());
+        LoadScene("WorldInfo");
     }
 
     public void LoadWorld(int world, int level)
@@ -299,12 +298,12 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void ResetGlobals()
+    public void ResetGlobals(int world = 1, int level = 1)
     {
         SetCoins(0);
          
-        SetWorld(1);
-        SetLevel(1);
+        SetWorld(world);
+        SetLevel(level);
         SetLives(3);
         SetScore(0);
 
@@ -317,6 +316,11 @@ public class GameManager : MonoBehaviour
     
     void FixedUpdate()
     {
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            if (!(GetLevel() + 1 > 2))
+                LoadNextWorld();
+        }
 
         ManageHUD();
 

@@ -7,6 +7,7 @@ public class WorldInfo : MonoBehaviour
 {
 
     GameManager _gameManager;
+    
 
     IEnumerator Start()
     {
@@ -28,7 +29,7 @@ public class WorldInfo : MonoBehaviour
 
             yield return StartCoroutine("LoadWorldInfo");
         }
-        /*else if (_gameManager.GetLives() <= 0)
+        else if (_gameManager.GetLives() < 0)
         {
             GameObject gameOver = GameObject.Find("Info HUD/Main").transform.Find("Game Over").gameObject;
             Destroy(worldNumber);
@@ -36,8 +37,9 @@ public class WorldInfo : MonoBehaviour
             Destroy(mario);
             gameOver.SetActive(true);
 
-            yield return StartCoroutine("LoadTitleScreen");
-        }*/
+            GameObject.Find("Main Camera").GetComponent<AudioSource>().Play();
+            yield return StartCoroutine("Reset");
+        }
         else
         {
             worldNumber.GetComponent<Text>().text = "WORLD " + _gameManager.GetVisualWorld(_gameManager.GetWorld(), _gameManager.GetLevel());
@@ -55,22 +57,17 @@ public class WorldInfo : MonoBehaviour
         _gameManager.SetIsPlaying(true);
     }
 
-    // Loads the title screen.
-    /*private IEnumerator LoadTitleScreen()
+    private IEnumerator Reset()
     {
-        yield return new WaitForSeconds(7);
-
-        // Reset the game manager's global game variables.
-        _gameManager.ResetGlobals();
-
-        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
-    } */
+        yield return new WaitForSeconds(7f);
+        _gameManager.ResetGlobals(_gameManager.GetWorld(), 1);
+        _gameManager.LoadScene("WorldInfo");
+    }
 
     // Loads the world info scene.
     private IEnumerator LoadWorldInfo()
     {
         yield return new WaitForSeconds(2.5f);
-        SceneManager.LoadScene("WorldInfo", LoadSceneMode.Single);
-
+        _gameManager.LoadScene("WorldInfo");
     }
 }

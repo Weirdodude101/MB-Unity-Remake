@@ -115,7 +115,8 @@ public class PlayerController : GameBase
 
         while (true)
         {
-            rigidBody.AddForce(new Vector2(0, jumpHeight - 0.75f), ForceMode2D.Impulse);
+            if (onGround)
+                rigidBody.AddForce(new Vector2(0, jumpHeight - 0.75f), ForceMode2D.Impulse);
             Destroy(GetComponent<BoxCollider2D>());
             yield return new WaitForSeconds(3f);
 
