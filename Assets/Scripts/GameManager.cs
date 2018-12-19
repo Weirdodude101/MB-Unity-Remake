@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviour
         }
         SetLevel(GetLevel() + 1);
 
-        LoadScene(String.Format("Scenes/{0}/{1}", GetWorld(), GetLevel()));
+        LoadScene(String.Format("Scenes/worlds/{0}-{1}", GetWorld(), GetLevel()));
 
         SetupTimer();
     }
