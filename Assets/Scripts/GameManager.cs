@@ -28,11 +28,14 @@ public class GameManager : MonoBehaviour
     private int _coins;
     private int _timeRemaining;
     private bool _timeRunning;
-
+    private bool _isPlaying;
+    private bool _timeUp;
     private IEnumerator _timerCo;
 
     void Start()
     {
+        ResetGlobals();
+
         _player = GameObject.Find("Player");
         _scoreVisual = GameObject.Find("Top_HUD/Main/MARIO/score");
         _coinsVisual = GameObject.Find("Top_HUD/Main/COINS");
@@ -58,20 +61,23 @@ public class GameManager : MonoBehaviour
 
         Physics2D.IgnoreLayerCollision(8, 9, true);
 
-        LoadNextWorld();
+        LoadScene("WorldInfo");
 
     }
 
     public void SetupTimer()
     {
-        if (!_timeRunning)
+        if (GetIsPlaying())
         {
-            SetTimeRemaining(level2Time[GetVisualWorld(GetWorld(), GetLevel())]);
+            if (!_timeRunning)
+            {
+                SetTimeRemaining(level2Time[GetVisualWorld(GetWorld(), GetLevel())]);
 
-            _timerCo = Timer();
-            StartCoroutine(_timerCo);
+                _timerCo = Timer();
+                StartCoroutine(_timerCo);
 
-            _timeRunning = true;
+                _timeRunning = true;
+            }
         }
     }
 
@@ -83,6 +89,15 @@ public class GameManager : MonoBehaviour
         _scoreVisual.GetComponent<Text>().text = GetVisualScore(GetScore());
     }
 
+    public void SetIsPlaying(bool isPlaying)
+    {
+        _isPlaying = isPlaying;
+    }
+
+    public bool GetIsPlaying()
+    {
+        return _isPlaying;
+    }
 
     public string GetVisualZeros(int len, int data)
     {
@@ -101,11 +116,40 @@ public class GameManager : MonoBehaviour
         return result;
     }
 
-    public void IncrementScore(int amount) {
+    public void IncrementLives()
+    {
+        SetLives(GetLives() + 1);
+    }
+
+    public void DecrementLives()
+    {
+        SetLives(GetLives() - 1);
+
+        if (_timeRunning)
+        {
+            _timeRunning = false;
+            StopCoroutine(_timerCo);
+        }
+        LoadScene("WorldInfo");
+    }
+
+    public void SetLives(int lives)
+    {
+        _lives = lives;
+    }
+
+    public int GetLives()
+    {
+        return _lives;
+    }
+
+    public void IncrementScore(int amount)
+    {
         SetScore(GetScore() + amount);
     }
 
-    public string GetVisualScore(int score) {
+    public string GetVisualScore(int score)
+    {
         string zeros = GetVisualZeros(6, score);
 
         return zeros += score;
@@ -169,10 +213,22 @@ public class GameManager : MonoBehaviour
         }
         SetLevel(GetLevel() + 1);
 
-        LoadScene(String.Format("Scenes/worlds/{0}-{1}", GetWorld(), GetLevel()));
+        LoadWorld(GetWorld(), GetLevel());
+    }
 
+    public void LoadWorld(int world, int level)
+    {
+        if (GetWorld() != world)
+            SetWorld(world);
+
+        if (GetLevel() != level)
+             SetLevel(level);
+
+        LoadScene(String.Format("Scenes/worlds/{0}-{1}", world, level));
+        SetIsPlaying(true);
         SetupTimer();
     }
+
 
     public string GetVisualWorld(int world, int level)
     {
@@ -214,6 +270,16 @@ public class GameManager : MonoBehaviour
     {
         return _timeRemaining;
     }
+
+    public void SetTimeUp(bool timeUp)
+    {
+        _timeUp = timeUp;
+    }
+
+    public bool GetTimeUp()
+    {
+        return _timeUp;
+    }
     
     IEnumerator Timer()
     {
@@ -227,8 +293,25 @@ public class GameManager : MonoBehaviour
 
         if (GetTimeRemaining() <= 0)
         {
+            SetTimeUp(true);
             GameObject.Find("Player").GetComponent<PlayerController>().HandlePlayerDeath();
         }
+
+    }
+
+    public void ResetGlobals()
+    {
+        SetCoins(0);
+         
+        SetWorld(1);
+        SetLevel(1);
+        SetLives(3);
+        SetScore(0);
+
+        SetIsPlaying(false);
+        SetTimeRemaining(0);
+
+
 
     }
     
@@ -239,7 +322,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void LoadScene(string sceneName) 
+    public void LoadScene(string sceneName) 
     {
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }

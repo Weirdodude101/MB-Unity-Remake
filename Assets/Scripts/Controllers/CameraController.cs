@@ -15,7 +15,6 @@ public class CameraController : MonoBehaviour
 
     readonly float minX = -3.293317f;
 
-    // Use this for initialization
     void Start()
     {
         Player = GameObject.Find("Player");
@@ -23,7 +22,6 @@ public class CameraController : MonoBehaviour
         gameObject.layer = 8;
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Debugging code so I can move past the edge of the screen

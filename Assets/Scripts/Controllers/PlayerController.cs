@@ -25,7 +25,7 @@ public class PlayerController : GameBase
 
     void Start()
     {
-        //_gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         Setup();
 
@@ -118,6 +118,8 @@ public class PlayerController : GameBase
             rigidBody.AddForce(new Vector2(0, jumpHeight - 0.75f), ForceMode2D.Impulse);
             Destroy(GetComponent<BoxCollider2D>());
             yield return new WaitForSeconds(3f);
+
+            _gameManager.DecrementLives();
             Destroy(gameObject);
         }
     }
