@@ -9,7 +9,6 @@ public class EnemyController : GameBase
 
     GameManager _gameManager;
 
-    public bool Dead;
     public Animator anim;
     public AudioSource audio;
 
@@ -31,6 +30,10 @@ public class EnemyController : GameBase
     bool isColliding;
     bool onScreen;
     bool running;
+
+    private bool _dead;
+    private bool _canDamage;
+    private bool _hitByShell;
 
 
     protected readonly Dictionary<string, Vector2> vectors = new Dictionary<string, Vector2>
@@ -98,6 +101,11 @@ public class EnemyController : GameBase
             StartCoroutine(co);
 
 
+        if(GameObject.Find("Player").GetComponent<PlayerController>().IsDead())
+        {
+            SetSpeed(0);
+        }
+
         isColliding = false;
     }
 
@@ -145,6 +153,26 @@ public class EnemyController : GameBase
 
     }
 
+    public void SetHitByShell(bool hitByShell)
+    {
+        _hitByShell = hitByShell;
+    }
+
+    public bool GetHitByShell()
+    {
+        return _hitByShell;
+    }
+
+    public void SetCanDamage(bool canDamage)
+    {
+        _canDamage = canDamage;
+    }
+
+    public bool GetCanDamage()
+    {
+        return _canDamage;
+    }
+
     public void SetType(ETypes type)
     {
         enemy.enemyType = type;
@@ -163,11 +191,12 @@ public class EnemyController : GameBase
     
     public void SetDead(bool dead)
     {
-        enemy.Dead = dead;
+        enemy._dead = dead;
+        enemy.anim.SetBool("isDead", enemy._dead);
     }
 
     public bool IsDead() {
-        return enemy.Dead;
+        return enemy._dead;
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -177,13 +206,13 @@ public class EnemyController : GameBase
 
         if (enemyType == ETypes.Koopa)
         {
-            if (enemy.anim.GetBool("inShell") && (col.gameObject.tag == "collider" || col.gameObject.tag == "Block"))
+            if (enemy.GetInShell() && (col.gameObject.tag == "Block" && col.gameObject.layer == 10))
             {
-                enemy.collided = true;
+                enemy.SetHitWall(true);
             }
         }
 
-        if (col.gameObject.tag == "collider" || col.gameObject.tag == "Block" || (Enum.IsDefined(typeof(ETypes), col.gameObject.tag) && col.gameObject.GetComponent<EnemyController>().enemyType != ETypes.Goomba))
+        if ((col.gameObject.tag == "Block" && col.gameObject.layer == 10) || (Enum.IsDefined(typeof(ETypes), col.gameObject.tag) && col.gameObject.GetComponent<EnemyController>().enemyType != ETypes.Goomba))
         {
             Flip();
         }

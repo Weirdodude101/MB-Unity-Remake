@@ -7,8 +7,6 @@ public class CameraController : MonoBehaviour
     
     GameObject Player;
 
-
-
     Vector3 offset = new Vector3(1.5f, 0f, -10f);
 
     bool freeMoving;

@@ -10,18 +10,14 @@ public class PlayerController : GameBase
     Animator anim;
     AudioSource music;
 
-    public bool onGround;
-    public bool Dead;
-    public Vector2 velocity;
     public AudioClip deathSound;
 
-    bool facingRight = true;
-
+    private bool _dead;
+    private bool _grounded;
+    private bool _facingRight = true;
     [SerializeField]
-    float playerSpeed = 1f;
-
-    [SerializeField]
-    float jumpHeight = 1f;
+    private float _speed = 1.5f;
+    private float _jumpHeight = 5f;
 
     void Start()
     {
@@ -36,23 +32,68 @@ public class PlayerController : GameBase
         transform.tag = "Player";
     }
 
-    void FixedUpdate()
+    public void SetJumpHeight(float jumpHeight)
     {
-        velocity = rigidBody.velocity;
-
-        float horizontal = Input.GetAxis("Horizontal");
-
-        Movement(horizontal);
-        Flip(horizontal);
-
+        _jumpHeight = jumpHeight;
     }
+
+    public float GetJumpHeight()
+    {
+        return _jumpHeight;
+    }
+
+    public void SetSpeed(float speed)
+    {
+        _speed = speed;
+    }
+
+    public float GetSpeed()
+    {
+        return _speed;
+    }
+
+    public Vector2 GetVelocity()
+    {
+        return rigidBody.velocity;
+    }
+
+    public void SetFacingRight(bool facingRight)
+    {
+        _facingRight = facingRight;
+    }
+
+    public bool GetFacingRight()
+    {
+        return _facingRight;
+    }
+
+    public void SetGrounded(bool grounded)
+    {
+        _grounded = grounded;
+    }
+
+    public bool GetGrounded()
+    {
+        return _grounded;
+    }
+
+    public void SetDead(bool dead)
+    {
+        _dead = true;
+    }
+
+    public bool IsDead()
+    {
+        return _dead;
+    }
+
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Block")
+        if (col.gameObject.layer == 10)
         {
             if (gbase.GetSide(gameObject.transform, col.gameObject.transform, true) == 0)
-                onGround = true;
+                SetGrounded(true);
         }
 
     }
@@ -70,7 +111,7 @@ public class PlayerController : GameBase
 
             case "koopa_side_collider":
                 Koopa koopa = col.gameObject.GetComponentInParent<Koopa>();
-                if (koopa.canKill)
+                if (koopa.GetCanDamage())
                     goto case "enemy_body_collider";
 
 
@@ -88,7 +129,7 @@ public class PlayerController : GameBase
     {
         if (enemy)
         {
-            if (!enemy.Dead)
+            if (!enemy.IsDead())
             {
                 StartCoroutine(Death());
             }
@@ -99,24 +140,19 @@ public class PlayerController : GameBase
         }
     }
 
-    public bool IsDead()
-    {
-        return Dead;
-    }
-
     IEnumerator Death()
     {
-        Dead = true;
-        anim.SetBool("death", Dead);
+        SetDead(true);
+        anim.SetBool("death", IsDead());
 
         gbase.SetMusic(music, deathSound, false, true);
 
-        playerSpeed = 0;
+        SetSpeed(0);
 
         while (true)
         {
-            if (onGround)
-                rigidBody.AddForce(new Vector2(0, jumpHeight - 0.75f), ForceMode2D.Impulse);
+            if (GetGrounded())
+                rigidBody.AddForce(new Vector2(0, GetJumpHeight() - 0.75f), ForceMode2D.Impulse);
             Destroy(GetComponent<BoxCollider2D>());
             yield return new WaitForSeconds(3f);
 
@@ -125,25 +161,31 @@ public class PlayerController : GameBase
         }
     }
 
+    void FixedUpdate()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        Movement(horizontal);
+        Flip(horizontal);
+    }
 
     void Movement(float horizontal)
     {
-        rigidBody.velocity = new Vector2(horizontal * playerSpeed, rigidBody.velocity.y);
+        rigidBody.velocity = new Vector2(horizontal * GetSpeed(), rigidBody.velocity.y);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (onGround && !Dead)
+            if (GetGrounded() && !IsDead())
             {
-                Jump(jumpHeight);
-                onGround = false;
+                Jump(GetJumpHeight());
+                SetGrounded(false);
 
                 GetComponent<AudioSource>().Play();
             }
         }
 
         anim.SetFloat("speed", Mathf.Abs(horizontal));
-        anim.SetBool("onGround", onGround);
-        anim.SetBool("spacePressed", !onGround);
+        anim.SetBool("onGround", GetGrounded());
+        anim.SetBool("spacePressed", !GetGrounded());
 
     }
 
@@ -153,9 +195,9 @@ public class PlayerController : GameBase
 
     void Flip(float horizontal)
     {
-        if (horizontal > 0 && !facingRight || horizontal < 0 && facingRight)
+        if (horizontal > 0 && !GetFacingRight() || horizontal < 0 && GetFacingRight())
         {
-            facingRight = !facingRight;
+            SetFacingRight(!GetFacingRight());
             GetComponent<SpriteRenderer>().flipX = !GetComponent<SpriteRenderer>().flipX;
         }
     }

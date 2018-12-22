@@ -6,10 +6,6 @@ public class Goomba : EnemyController
 
     public static Goomba goomba;
 
-
-
-    bool hitByKoopa;
-
     void Start()
     {
         audio = GetComponent<AudioSource>();
@@ -38,10 +34,10 @@ public class Goomba : EnemyController
 
     void CheckDead()
     {
-        if (Dead == true)
+        if (IsDead())
         {
             enemySpeed = 0f;
-            anim.SetBool("isDead", Dead);
+            SetDead(IsDead());
             bcollider.size = new Vector2(bcollider.size.x, 0.04f);
             StartCoroutine(Death(0.3f));
         }
@@ -53,9 +49,9 @@ public class Goomba : EnemyController
         switch (col.gameObject.tag)
         {
             case "koopa_side_collider":
-                if (koopa.shellMoving)
+                if (koopa.GetShellMoving())
                 {
-                    hitByKoopa = true;
+                    SetHitByShell(true);
                     rigidBody.AddForce(new Vector2(0.75f, 1f), ForceMode2D.Impulse);
                     StartCoroutine(Death(10f));
                 }
@@ -68,7 +64,7 @@ public class Goomba : EnemyController
 
     void Movement()
     {
-        if (!hitByKoopa)
+        if (!GetHitByShell())
             rigidBody.velocity = new Vector2(enemySpeed * -1, rigidBody.velocity.y);
     }
 
@@ -77,13 +73,12 @@ public class Goomba : EnemyController
     {
         while (true)
         {
-            if (hitByKoopa)
+            if (GetHitByShell())
             {
 
                 foreach (Transform child in transform)
                 {
-                    BoxCollider2D collider2D = child.GetComponent<BoxCollider2D>();
-                    collider2D.enabled = false;
+                    child.GetComponent<BoxCollider2D>().enabled = false;
                 }
                 spriteRenderer.flipY = true;
                 bcollider.enabled = false;

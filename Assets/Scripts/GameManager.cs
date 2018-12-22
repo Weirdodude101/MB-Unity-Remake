@@ -287,6 +287,10 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForSeconds(0.4f);
             SetTimeRemaining(GetTimeRemaining() - 1);
+            if (GameObject.Find("Player").GetComponent<PlayerController>().IsDead())
+            {
+                StopCoroutine(_timerCo);
+            }
 
         }
 
@@ -309,8 +313,6 @@ public class GameManager : MonoBehaviour
 
         SetIsPlaying(false);
         SetTimeRemaining(0);
-
-
 
     }
     

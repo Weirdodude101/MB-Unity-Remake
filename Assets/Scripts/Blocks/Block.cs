@@ -44,7 +44,7 @@ public class Block : GameBase
     {
         if (col.gameObject.tag != "Koopa" || col.gameObject.tag != "Goomba")
         {
-            if (GetSide(col.gameObject.transform, gameObject.transform, true) == 1 && player.velocity.y > 0)
+            if (GetSide(col.gameObject.transform, gameObject.transform, true) == 1 && player.GetVelocity().y > 0)
             {
                 Activate();
             }
@@ -52,7 +52,7 @@ public class Block : GameBase
 
         if (col.gameObject.tag == "Koopa")
         {
-            if (col.gameObject.GetComponent<Koopa>().shellMoving)
+            if (col.gameObject.GetComponent<Koopa>().GetShellMoving())
                 Activate();
         }
     }
