@@ -44,7 +44,7 @@ public class Block : GameBase
     {
         if (col.gameObject.tag != "Koopa" || col.gameObject.tag != "Goomba")
         {
-            if (GetSide(col.gameObject.transform, gameObject.transform, true) == 1 && player.GetVelocity().y > 0)
+            if (GetSide(col.gameObject.transform, gameObject.transform, true) == 1 && !player.GetGrounded())
             {
                 Activate();
             }
