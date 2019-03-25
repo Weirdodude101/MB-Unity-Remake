@@ -12,11 +12,17 @@ public class PlayerController : GameBase
 
     public AudioClip deathSound;
 
+    private AudioSource _jumpSound;
     private bool _dead;
     private bool _grounded;
     private bool _facingRight = true;
+    private bool _sprinting;
+
     [SerializeField]
     private float _speed = 1.5f;
+    private float _speedStore;
+
+    private float _speedDif = 2f;
     private float _jumpHeight = 5f;
 
     void Start()
@@ -29,6 +35,8 @@ public class PlayerController : GameBase
         anim = GetComponent<Animator>();
         music = GameObject.Find("Main Camera").GetComponent<AudioSource>();
 
+        _jumpSound = GetComponent<AudioSource>();
+        _speedStore =  _speed;
         transform.tag = "Player";
     }
 
@@ -49,7 +57,35 @@ public class PlayerController : GameBase
 
     public float GetSpeed()
     {
+        if (!IsDead() && GetGrounded())
+        {
+            float dTime = -Time.deltaTime;
+            float sprintSpeed = _speedStore + _speedDif;
+            
+            if (GetSprinting())
+                dTime *= -1;
+            
+            if ((!GetSprinting() && _speed >= sprintSpeed) || (GetSprinting() && _speed <= sprintSpeed))
+            {
+                SetSpeed(_speed+dTime);
+            }
+
+        }
+
         return _speed;
+    }
+
+    public void SetSprinting(bool sprinting)
+    {
+        if (!sprinting)
+           SetSpeed(_speedStore);
+
+        _sprinting = sprinting;
+    }
+
+    public bool GetSprinting()
+    {
+        return _sprinting;
     }
 
     public Vector2 GetVelocity()
@@ -160,17 +196,19 @@ public class PlayerController : GameBase
     }
 
     void Movement(float horizontal)
-    {
+    { 
         rigidBody.velocity = new Vector2(horizontal * GetSpeed(), rigidBody.velocity.y);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (!IsDead())
         {
-            if (GetGrounded() && !IsDead())
-            {
-                Jump(GetJumpHeight());
-                SetGrounded(false);
+            SetSprinting(Input.GetKey(KeyCode.LeftShift));
 
-                GetComponent<AudioSource>().Play();
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (GetGrounded())
+                {
+                    Jump(GetJumpHeight());
+                }
             }
         }
 
@@ -182,6 +220,8 @@ public class PlayerController : GameBase
 
     void Jump(float height) {
         rigidBody.velocity = new Vector2(0, height);
+        SetGrounded(false);
+        _jumpSound.Play();
     }
 
     void Flip(float horizontal)
