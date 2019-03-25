@@ -104,6 +104,10 @@ public class EnemyController : GameBase
         if(GameObject.Find("Player").GetComponent<PlayerController>().IsDead())
         {
             SetSpeed(0);
+            if (enemyType == ETypes.Koopa)
+            {
+                enemy.SetTempSpeed(0);
+            }
         }
 
         isColliding = false;
