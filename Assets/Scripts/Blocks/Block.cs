@@ -12,7 +12,7 @@ public class Block : GameBase
     public enum BlockTypes { Coin, Brick, Used}
     public BlockTypes blockType;
 
-    public enum Contains {Empty, Coin, Mushroom, Flower, Star, Life, Vine };
+    public enum Contains {Empty, Coin, Powerup, Star, Life, Vine };
     public Contains contains;
 
     readonly Dictionary<BlockTypes, int> type2Id = new Dictionary<BlockTypes, int>
@@ -61,15 +61,20 @@ public class Block : GameBase
     {
         if (blockType != BlockTypes.Used)
         {
-            if (contains == Contains.Empty)
-            {
-                Destroy(gameObject);
-            }
-            else
+            if (blockType == BlockTypes.Brick && _gameManager.GetPlayerState() == GameManager.PlayerStates.Small)
             {
                 StartCoroutine(Bounce());
-                SetType(BlockTypes.Used);
+                return;
             }
+            switch(contains)
+            {
+                case Contains.Coin:
+                    _gameManager.IncrementCoins();
+                    break;
+            }
+            
+            StartCoroutine(Bounce());
+            SetType(BlockTypes.Used);
         }
     }
 

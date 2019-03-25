@@ -143,6 +143,7 @@ public class PlayerController : GameBase
         {
             if (GetGrounded())
                 rigidBody.AddForce(new Vector2(0, GetJumpHeight() - 0.75f), ForceMode2D.Impulse);
+                
             Destroy(GetComponent<BoxCollider2D>());
             yield return new WaitForSeconds(3f);
 

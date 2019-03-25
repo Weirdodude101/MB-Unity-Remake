@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
     private bool _timeUp;
     private IEnumerator _timerCo;
 
+    public enum PlayerStates {Small, Big, Fire}
+    public PlayerStates playerState;
+
     void Start()
     {
         ResetGlobals();
@@ -87,6 +90,21 @@ public class GameManager : MonoBehaviour
         _worldVisual.GetComponent<Text>().text = GetVisualWorld(GetWorld(), GetLevel());
         _coinsVisual.GetComponent<Text>().text = GetVisualCoins(GetCoins());
         _scoreVisual.GetComponent<Text>().text = GetVisualScore(GetScore());
+    }
+
+    public GameObject GetPlayer()
+    {
+        return _player;
+    }
+
+    public void SetPlayerState(PlayerStates state)
+    {
+        playerState = state;
+    }
+
+    public PlayerStates GetPlayerState()
+    {
+        return playerState;
     }
 
     public void SetIsPlaying(bool isPlaying)
