@@ -185,9 +185,7 @@ public class GameManager : MonoBehaviour
 
     public void IncrementCoins()
     {
-        int coins = GetCoins();
-
-        if (coins >= 99)
+        if (GetCoins() >= 99)
         {
             SetCoins(0);
             IncrementLives();

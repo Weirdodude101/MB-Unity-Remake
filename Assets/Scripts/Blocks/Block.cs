@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 public class Block : GameBase
 {
-    GameManager _gameManager;
-
     SpriteRenderer spriteRenderer;
     Animator anim;
     PlayerController player;
@@ -24,10 +22,6 @@ public class Block : GameBase
     
     void Start()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-
-        Setup();
-
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();

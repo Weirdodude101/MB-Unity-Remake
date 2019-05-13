@@ -2,9 +2,6 @@
 using System.Collections;
 public class PlayerController : GameBase
 {
-
-    GameManager _gameManager;
-
     Rigidbody2D rigidBody;
 
     Animator anim;
@@ -27,9 +24,6 @@ public class PlayerController : GameBase
 
     void Start()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-
-        Setup();
 
         rigidBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();

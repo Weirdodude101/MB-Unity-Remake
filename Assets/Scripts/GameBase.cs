@@ -6,10 +6,12 @@ public class GameBase : MonoBehaviour
 {
 
     protected GameBase gbase;
+    protected GameManager _gameManager;
     public Dictionary<string, Sprite> dictSprites = new Dictionary<string, Sprite>();
 
-    protected void Setup() {
+    protected virtual void Awake() {
         gbase = this;
+        _gameManager = FindObjectOfType<GameManager>();
     }
 
     public bool SendMethod(params object[] objects)

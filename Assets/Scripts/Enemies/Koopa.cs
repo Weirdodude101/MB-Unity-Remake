@@ -156,7 +156,7 @@ public class Koopa : EnemyController
     public void FlipShell()
     {
 
-        if (base.isPrime((int)Math.Floor(Time.time)))
+        if (gbase.isPrime((int)Math.Floor(Time.time)))
         {
             SetStoredSpeed(-GetStoredSpeed());
             if (GetStoredSpeed() < 0)
