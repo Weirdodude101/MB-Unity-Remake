@@ -7,7 +7,7 @@ public class Block : GameBase
     Animator anim;
     PlayerController player;
 
-    public enum BlockTypes { Coin, Brick, Used}
+    public enum BlockTypes { Regular, Brick, Used}
     public BlockTypes blockType;
 
     public enum Contains {Empty, Coin, Powerup, Star, Life, Vine };
@@ -15,7 +15,7 @@ public class Block : GameBase
 
     readonly Dictionary<BlockTypes, int> type2Id = new Dictionary<BlockTypes, int>
     {
-        {BlockTypes.Coin, 0},
+        {BlockTypes.Regular, 0},
         {BlockTypes.Brick, 5},
         {BlockTypes.Used, 6}
     };
@@ -47,17 +47,17 @@ public class Block : GameBase
         if (col.gameObject.tag == "Koopa")
         {
             if (col.gameObject.GetComponent<Koopa>().GetShellMoving())
-                Activate();
+                Activate(byEnemy: true);
         }
     }
 
-    void Activate()
+    void Activate(bool byEnemy=false)
     {
         if (blockType != BlockTypes.Used)
         {
-            if (blockType == BlockTypes.Brick && _gameManager.GetPlayerState() == GameManager.PlayerStates.Small)
+            if ((blockType == BlockTypes.Brick && _gameManager.GetPlayerState() == GameManager.PlayerStates.Small) && !byEnemy)
             {
-                StartCoroutine(Bounce());
+                StartCoroutine(Bounce(transform));
                 return;
             }
             switch(contains)
@@ -67,7 +67,7 @@ public class Block : GameBase
                     break;
             }
             
-            StartCoroutine(Bounce());
+            StartCoroutine(Bounce(transform));
             SetType(BlockTypes.Used);
         }
     }
@@ -78,34 +78,50 @@ public class Block : GameBase
 
         spriteRenderer.sprite = gbase.dictSprites["item_block_sprites_" + type2Id[blockType]];
 
-        if (blockType != BlockTypes.Coin)
+        if (blockType != BlockTypes.Regular)
             anim.enabled = false;
     }
 
-    IEnumerator Bounce()
+    IEnumerator Bounce(Transform transf, float moveBy = 0.09375f, float overTime = 0.125f)
     {
+        
         float startTime = Time.time;
-        float moveBy = 0.09375f;
-        float overTime = 0.125f;
 
-        Vector2 point = new Vector2(transform.position.x, transform.position.y + moveBy);
+        if (contains == Contains.Coin && transf.tag != "Coin")
+        {
+            GameObject coin = GameObject.Find("Coin");
+            coin.transform.localScale = new Vector2(0.75f, 0.75f);
+            Instantiate(coin, transf);
+            Transform child = transf.GetChild(0);
+            child.GetComponent<SpriteRenderer>().enabled = true;
+            StartCoroutine(Bounce(child.transform, moveBy: 0.5f, overTime: 0.3125f));
+
+        }
+
+        Vector2 point = new Vector2(transf.position.x, transf.position.y + moveBy);
 
         while (Time.time < startTime + overTime)
         {
-            transform.position = Vector2.Lerp(transform.position, point, (Time.time - startTime) / overTime);
+            transf.position = Vector2.Lerp(transf.position, point, (Time.time - startTime) / overTime);
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.0016f);
+        if (transf.tag == "Block")
+            yield return new WaitForSeconds(0.0016f);
+        else
+            yield return new WaitForFixedUpdate();
 
         startTime = Time.time;
 
         point.y -= moveBy;
         while (Time.time < startTime + overTime)
         {
-            transform.position = Vector2.Lerp(transform.position, point, (Time.time - startTime) / overTime);
+            transf.position = Vector2.Lerp(transf.position, point, (Time.time - startTime) / overTime);
             yield return null;
         }
+
+        if (transf.tag == "Coin")
+            Destroy(transf.gameObject);
 
     }
 }

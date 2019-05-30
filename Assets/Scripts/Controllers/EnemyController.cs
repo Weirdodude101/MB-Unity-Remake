@@ -6,11 +6,10 @@ using System;
 
 public class EnemyController : GameBase
 {
+
+    public new AudioSource audio;
     public Animator anim;
-    public AudioSource audio;
-
     internal BoxCollider2D bcollider;
-
     protected Rigidbody2D rigidBody;
     protected SpriteRenderer spriteRenderer;
 

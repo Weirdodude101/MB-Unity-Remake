@@ -56,6 +56,10 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
         DontDestroyOnLoad(GameObject.Find("Top_HUD"));
+
+        DontDestroyOnLoad(GameObject.Find("Coin"));
+        GameObject.Find("Coin").GetComponent<SpriteRenderer>().enabled = false;
+
         foreach (GameObject obj in FindObjectsOfType(typeof(GameObject)))
         {
             if (obj.name.StartsWith("model_", StringComparison.Ordinal))
