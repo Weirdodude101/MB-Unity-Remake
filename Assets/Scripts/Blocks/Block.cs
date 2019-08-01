@@ -13,6 +13,8 @@ public class Block : GameBase
     public enum Contains {Empty, Coin, Powerup, Star, Life, Vine };
     public Contains contains;
 
+    private bool _bouncing;
+
     readonly Dictionary<BlockTypes, int> type2Id = new Dictionary<BlockTypes, int>
     {
         {BlockTypes.Regular, 0},
@@ -31,8 +33,6 @@ public class Block : GameBase
         SetType(blockType);
 
     }
-
-
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -53,7 +53,7 @@ public class Block : GameBase
 
     void Activate(bool byEnemy=false)
     {
-        if (blockType != BlockTypes.Used)
+        if (blockType != BlockTypes.Used && !IsBouncing())
         {
             if ((blockType == BlockTypes.Brick && _gameManager.GetPlayerState() == GameManager.PlayerStates.Small) && !byEnemy)
             {
@@ -82,9 +82,14 @@ public class Block : GameBase
             anim.enabled = false;
     }
 
+    public bool IsBouncing()
+    {
+        return _bouncing;
+    }
+
     IEnumerator Bounce(Transform transf, float moveBy = 0.09375f, float overTime = 0.125f)
     {
-        
+        _bouncing = true;
         float startTime = Time.time;
 
         if (contains == Contains.Coin && transf.tag != "Coin")
@@ -122,6 +127,6 @@ public class Block : GameBase
 
         if (transf.tag == "Coin")
             Destroy(transf.gameObject);
-
+        _bouncing = false;
     }
 }
